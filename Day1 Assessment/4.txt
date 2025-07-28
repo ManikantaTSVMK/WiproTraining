@@ -1,0 +1,12 @@
+import java.util.Scanner;
+public class Main {
+
+    public static void main(String[] args) {
+
+        Scanner scanner=new Scanner(System.in);
+        int number=scanner.nextInt();
+        String result=(number%2==0)?"No is Even":"No is odd";
+        System.out.println(result);
+        scanner.close();
+    }
+}
