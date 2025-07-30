@@ -1,0 +1,20 @@
+import java.util.Scanner;
+
+public class Person {
+    // TODO: Define the 'Person' class with 'name' and 'age' member variables
+    String name;
+    int age;
+
+    public static void main(String[] args) {
+        Scanner scanner=new Scanner(System.in);
+        String personName=scanner.nextLine();
+        int personAge=scanner.nextInt();
+        Person person=new Person();
+        person.name=personName;
+        person.age=personAge;
+        System.out.println("Name: "+person.name);
+        System.out.println("Age: "+person.age);
+        scanner.close();
+        // TODO: Write your code here
+    }
+}

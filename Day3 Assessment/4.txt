@@ -1,0 +1,29 @@
+import java.util.Scanner;
+
+public class Constructor {
+
+    double volume;
+
+    
+    public Constructor() {
+        int side = 10;
+        volume = side * side * side;
+        System.out.println("Constructor without parameter");
+        System.out.println("Volume is " + volume);
+    }   
+    public Constructor(int l, int b, int h) {
+        volume = l * b * h;
+        System.out.println("Constructor with parameter");
+        System.out.println("Volume is " + volume);
+    }
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        Constructor cuboid1 = new Constructor();
+        int l = s.nextInt();
+        int b = s.nextInt();
+        int h = s.nextInt();
+        Constructor cuboid2 = new Constructor(l, b, h);
+
+        s.close();
+    }
+}
