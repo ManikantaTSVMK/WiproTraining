@@ -1,0 +1,31 @@
+public class Main {
+
+    public static void main(String[] args) {
+        Vehicle v = new Vehicle();
+        v.noOfWheels();
+
+        Scooter scooter = new Scooter();
+        scooter.noOfWheels();
+
+        Car car = new Car();
+        car.noOfWheels();
+    }
+}
+
+class Vehicle {
+    public void noOfWheels() {
+        System.out.println("No of wheels undefined");
+    }
+}
+class Scooter extends Vehicle {
+    @Override
+    public void noOfWheels() {
+        System.out.println("No of wheels 2");
+    }
+}
+class Car extends Vehicle {
+    @Override
+    public void noOfWheels() {
+        System.out.println("No of wheels 4");
+    }
+}
