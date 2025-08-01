@@ -1,0 +1,29 @@
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        try {
+            String text = s.nextLine();
+            checkVowels(text);
+            System.out.println("Original string: " + text);
+            System.out.println("String contains vowels");
+            
+        } catch (NoVowelsException e) {
+            System.out.println("Original string: " + e.getMessage());
+            System.out.println("String does not contain any vowels");
+        } finally {
+            s.close();
+        }
+    }
+    public static void checkVowels(String text) throws NoVowelsException {
+        if (!text.toLowerCase().matches(".*[aeiou].*")) {
+            throw new NoVowelsException(text);
+        }
+    }
+}
+class NoVowelsException extends Exception {
+    public NoVowelsException(String message) {
+        super(message);
+    }
+}

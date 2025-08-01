@@ -22,6 +22,27 @@ try:=  business logic  --  you think that may be the code is risky
 catch := handle immediately the exception after occured in try block 
 finally block will execute in both the cases 
 
-throws 
-throws
 
+Runtime Exceptions  ( Unchecked Exceptions ) 
+
+ArithmeticExceptions :  DivideByZero
+
+IllegalArgumentException : NumberFormatException / IllegalThreadStateException
+
+ClassCastException : It may throw when an object is cast to a class it's not an instance of
+
+IndexOutOfBoundExcept : for invalid retreiving the values from the array or string for a invalid index range
+
+Null Pointer Exception : which is pointing to null reference;
+
+
+Compile Time Exceptions (Checked Exception)
+
+classNotFoundexception
+
+filenotfoundexception
+
+InterruptedException
+instantiation exception
+
+nosuchmethod exception
