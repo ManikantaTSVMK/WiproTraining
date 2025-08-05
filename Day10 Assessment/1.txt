@@ -1,0 +1,49 @@
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) throws InterruptedException {
+        Scanner s = new Scanner(System.in);
+
+        int x = s.nextInt();
+        int y = s.nextInt();
+        A1 a = new A1(x, y);
+        a.startOperations();
+    }
+
+    static class A1 {
+        int i, j;
+
+        A1(int x, int y) {
+            i = x;
+            j = y;
+        }
+
+        public void startOperations() throws InterruptedException {
+            System.out.println("ARITHEMATIC OPERATIONS");
+
+            Thread sum = new Thread(() -> {
+                System.out.println("SUM " + (i + j));
+            });
+            Thread diff = new Thread(() -> {
+                System.out.println("DIFFERENCE " + (i - j)); 
+            });
+            Thread prod = new Thread(() -> {
+                System.out.println(" PRODUCT  " + (i * j));
+            });
+            Thread ratio = new Thread(() -> {
+                System.out.println("RATIO  " + (j == 0 ? "undefined" : (i / j))); 
+            });
+            Thread pow = new Thread(() -> {
+                System.out.println("POWER  " + Math.pow(i, j)); 
+            });
+            sum.start(); sum.join();
+            diff.start(); diff.join();
+            prod.start(); prod.join();
+            ratio.start(); ratio.join();
+            pow.start(); pow.join();
+
+            System.out.println("END OF A");
+        }
+    }
+}

@@ -85,8 +85,8 @@ Design pattern  : -- Creational  , Behavioural  , Structural
 
 GOF --- Design pattern\
 
-Design Patterns: Behavioral - Factory, Abstract Factory, Builder, Prototype, Singleton.
+Design Patterns: Creational - Factory, Abstract Factory, Builder, Prototype, Singleton.
 
 Design Patterns: Structural - Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy
 
-Design Patterns: Creational - Interpreter, Template method, Chain responsibility, Comment Iterator, Mediator, Momento, Observer, State, Strategy, Visitor.
+Design Patterns: Behavioral  - Interpreter, Template method, Chain responsibility, Comment Iterator, Mediator, Momento, Observer, State, Strategy, Visitor.
