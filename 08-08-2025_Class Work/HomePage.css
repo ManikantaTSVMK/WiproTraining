@@ -1,0 +1,84 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: url('https://wallpapers.com/images/high/up-4k-cartoon-rwpsbhcvlho365xm.webp') no-repeat center center fixed;
+    background-size: cover;
+}
+.overlay {
+    background: rgba(0,0,0,0.5);
+    min-height: 100vh;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.container {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+    padding: 16px 0;
+}
+.navbar button {
+    background: transparent;
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 10px 24px;
+    margin: 0 12px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.navbar button.active,
+.navbar button:hover {
+    background: #fff;
+    color: #222;
+}
+.section {
+    display: none;
+    color: #fff;
+    margin-top: 100px;
+    text-align: center;
+}
+.section.active {
+    display: block;
+}
+.banner {
+    text-align: center;
+    margin-top: 120px;
+}
+.banner h1 {
+    color: #fff;
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+}
+.banner .btn {
+    background: transparent;
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 12px 32px;
+    font-size: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.banner .btn:hover {
+    background: #fff;
+    color: #222;
+}

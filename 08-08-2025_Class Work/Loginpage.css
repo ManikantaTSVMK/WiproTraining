@@ -1,0 +1,79 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('https://t3.ftcdn.net/jpg/06/74/64/08/240_F_674640849_yudZp8yXIMXGsC8NRgi0Bo7DibU4aMDq.jpg'); 
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.login-container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    width: 300px;
+    text-align: center;
+}
+h2 {
+    margin-bottom: 20px;
+}
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.remember {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.remember input {
+    margin-right: 5px;
+}
+.login-btn {
+    background: #0e38cd;
+    border: none;
+    padding: 10px;
+    color: white;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+.login-btn:hover {
+    background: #0e38cd;
+}
+.social-login {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+.social-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #ccc;
+    background: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    flex: 1;
+    justify-content: center;
+}
+.social-btn img {
+    width: 18px;
+    height: 18px;
+}
+.signup {
+    margin-top: 15px;
+    font-size: 14px;
+}

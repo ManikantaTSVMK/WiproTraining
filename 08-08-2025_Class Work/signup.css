@@ -1,0 +1,102 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('https://sdmntprwestus.oaiusercontent.com/files/00000000-7c34-6230-b54f-a5e9aeac0bfb/raw?se=2025-08-08T10%3A16%3A18Z&sp=r&sv=2024-08-04&sr=b&scid=62bccb56-4a46-58b1-a622-b9806099c575&skoid=02b7f7b5-29f8-416a-aeb6-99464748559d&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-08-07T19%3A02%3A06Z&ske=2025-08-08T19%3A02%3A06Z&sks=b&skv=2024-08-04&sig=8tpcx87zNqFjkNrUCMBvAKJmqwYCWDqliwmksXBifaI%3D');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.form-box {
+    background: white;
+    padding: 30px;
+    width: 350px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.input-group label {
+    font-size: 13px;
+    color: #555;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 5px;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background-color: #0069d9;
+}
+
+.toggle-link {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.toggle-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.toggle-link a:hover {
+    text-decoration: underline;
+}
+
+hr {
+    margin: 20px 0;
+    border: none;
+    border-top: 1px solid #ccc;
+}
+
+.social-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: black;
+    background: white;
+    font-size: 14px;
+}
+
+.social-login img {
+    height: 16px;
+}

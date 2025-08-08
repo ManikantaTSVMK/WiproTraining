@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="HomePage.css">
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="navbar">
+        <button class="nav-btn active" onclick="showSection('home')">HOME</button>
+        <button class="nav-btn" onclick="showSection('about')">ABOUT</button>
+        <button class="nav-btn" onclick="showSection('portfolio')">PORTFOLIO</button>
+        <button class="nav-btn" onclick="showSection('services')">SERVICES</button>
+        <button class="nav-btn" onclick="showSection('contact')">CONTACT</button>
+    </div>
+    <div class="container">
+        <div id="home" class="section active">
+            <div class="banner">
+                <h1>Welcome To My Page</h1>
+            </div>
+        </div>
+        <div id="about" class="section">
+            <h1>About</h1>
+            <p>Welcome to the About section. Add your content here.</p>
+        </div>
+        <div id="portfolio" class="section">
+            <h1>Portfolio</h1>
+            <p>Showcase your work in the Portfolio section.</p>
+        </div>
+        <div id="services" class="section">
+            <h1>Services</h1>
+            <p>Describe your services here.</p>
+        </div>
+        <div id="contact" class="section">
+            <h1>Contact</h1>
+            <p>Contact information goes here.</p>
+        </div>
+    </div>
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.nav-btn[onclick="showSection('${sectionId}')"]`).classList.add('active');
+        }
+    </script>
+</body>
+</html>
