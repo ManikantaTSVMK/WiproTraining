@@ -1,0 +1,81 @@
+Java Script -- High Level language  , interpreted programming language .
+
+Features of JS:
+
+1) supports event-driven , functional programming ,  It also has 
+object oriented programming Features.
+
+2) Client-Side scripting  -- > Scripts written in JS are embedded in or included in HTML
+pages and run client side by a JS engine in the user's web browser
+
+3) Server-Side scripting -->  with the use of Node JS  , JS has also become so popular
+language for server side scripting that allow the development of web applications
+to be done in a language for both server and client
+
+4) Dynamic  -- Dynamically typed language , so that we need not to specify the data types
+of variable , they are checked at run time  .
+ It also supports features like dynamic function creation and object notation
+
+5) Lightweight and interpreted --  small scripts and interpreted rather that compiled which allows
+rapid testing and iterations
+
+Full stack front end batch --  MERN / MEAN -- Node JS 
+
+Validations at front end itself rather than hitting to the back end or server - (Database)
+
+
+Web pages -- How it works
+
+whenever we visit a web page , we use browser for that  --- 
+
+Button --- > The request goes to the server will handle the incoming request , it will reply back with a new response with a web page, a new HTML document which is 
+sent back to the client for the confirmation
+
+JS was specifically developed to be a language placed into a web browser and automate things on the client side ,
+like animation ,  menus ,  validating form input before submitting to the server , or manipulating the DOM (Document Object Model)
+
+Synchronous based - -100 clients
+Asynchronous based --- AJAX -- Page -- Examination Question Paper -- will be loaded on multiple client's PC or browser
+
+executable on the server  , fetch the data and populate to the DOM
+
+
+Google version 8 javascript engine and node js really became more interesting and popular , this made easy to write a server-side code in java scripting
+
+
+Only JS is the only language that runs both on server and the browser -- It understands only three core languages
+1) HTML  --- Structure
+2) CSS -- Beautification to that Structure
+3) JS -- for enabling the dynamic , interactive features on web pages , like animation, validation , real time updates and complex logic 
+
+DOM  is an interface between web pages and scripting languages like JS . It provides a structured representation of a web page's content , allows programs to dynamically access and manipulate the content , structure and style of the document.
+
+How browser use the DOM
+1) Parsing HTML  --- Creating the HTML Elements , attributes and text --- into a DOM  which is a tree (Hierarchy) like structure
+2) Parsing CSS and creeating CSSOM - the browser also parses CSS stylesheets , which is a visual styles then creates the CSS Object Model representing the styles in hierarchical structure.
+3) Creating Render Tree -- the browser combines the DOM Tree and the CSSOM to build a render tree.
+4) Layout -- responsive websites-- Browser will calculates the size and position 
+5) Painting --  converting the visual representation into pixels that the user sees.
+
+We will be reading the elements from the js and provide to the dom  --
+Accessing the elements ( getElementById()),
+modifying the content(  innerText , innerHtml), changing the styles (style), adding/removing the elements ( CreateElement()) , handling events
+
+JS codes engines uses JIT Compilers
+
+Some of the jS engines 
+V8 - developed by Google , powers chrome and node js 
+spidermonkey --  developed by Mozilla , powers firefox
+javascript core  -- Developed by apple , powers the safari
+
+
+JS ------> JS Engine -------> Browser
+
+
+Java Script in the <Head> Section
+js runs before the user sees any of the page's visible content
+use cases : Like global functions , variables , or load external libraries that are
+needed throughout the entire page and do not directly interact with the pages's visible content before it's loaded
+Java Script in the <Body> Section
+scripts in the body section are parsed and executed as the browser encounters them during the rendering of the page content
+scripts placed after specific html elements can directly access and manipulate those elements because they have already been parsed and added to the dom
