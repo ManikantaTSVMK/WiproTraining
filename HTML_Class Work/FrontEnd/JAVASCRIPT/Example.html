@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Example</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f7f7f7;
+        }
+        header {
+            background: #4a90e2;
+            color: #fff;
+            padding: 15px 10px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        #timer { 
+            font-size: 1.5em; 
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        section {
+            background: #fff;
+            padding: 20px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            margin-bottom: 25px;
+        }
+        #taskInput, #calcNum1, #calcNum2, #calcOp {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            margin-right: 8px;
+            font-size: 1em;
+        }
+        #addTaskBtn, #calcBtn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            background: #4a90e2;
+            color: #fff;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        #addTaskBtn:hover, #calcBtn:hover {
+            background: #357abd;
+        }
+        #taskList {
+            margin-top: 15px;
+            padding-left: 0;
+        }
+        .todo-item {
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 7px;
+            background: #f0f4fa;
+            border-radius: 4px;
+            padding: 7px 10px;
+        }
+        .remove-btn {
+            margin-left: 12px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: none;
+            background: #e94e77;
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: background 0.2s;
+        }
+        .remove-btn:hover {
+            background: #c0392b;
+        }
+        #calculator {
+            margin-top: 30px;
+        }
+        #calc-result {
+            margin-top: 10px; 
+            font-weight: bold; 
+            color: #4a90e2;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <span id="timer"></span>
+    </header>
+    <section>
+        <input type="text" id="taskInput" placeholder="Add a task">
+        <button id="addTaskBtn">Add Task</button>
+        <ul id="taskList"></ul>
+    </section>
+    <section>
+        <input type="number" id="calcNum1" placeholder="Number 1">
+        <select id="calcOp">
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+        </select>
+        <input type="number" id="calcNum2" placeholder="Number 2">
+        <button id="calcBtn">Calculate</button>
+        <span id="calcResult"></span>
+    </section>
+    <script>
+        // Timer
+        function updateTimer() {
+            const timer = document.getElementById('timer');
+            const now = new Date();
+            timer.textContent = 'Current Time: ' + now.toLocaleTimeString();
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // Todo List with Closure
+        function createTodoManager() {
+            let todos = [];
+            return {
+                add: function(task) {
+                    todos.push(task);
+                },
+                remove: function(index) {
+                    todos.splice(index, 1);
+                },
+                getAll: function() {
+                    return todos.slice();
+                }
+            };
+        }
+        const todoManager = createTodoManager();
+        const taskInput = document.getElementById('taskInput');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const taskList = document.getElementById('taskList');
+
+        function renderTodos() {
+            taskList.innerHTML = '';
+            const todos = todoManager.getAll();
+            todos.forEach((task, idx) => {
+                const li = document.createElement('li');
+                li.className = 'todo-item';
+                li.textContent = task;
+                const btn = document.createElement('button');
+                btn.className = 'remove-btn';
+                btn.textContent = 'Remove';
+                btn.onclick = () => {
+                    todoManager.remove(idx);
+                    renderTodos();
+                };
+                li.appendChild(btn);
+                taskList.appendChild(li);
+            });
+        }
+
+        addTaskBtn.onclick = () => {
+            const task = taskInput.value.trim();
+            if (task) {
+                todoManager.add(task);
+                taskInput.value = '';
+                renderTodos();
+            }
+        };
+
+        // Calculator
+        const calcNum1 = document.getElementById('calcNum1');
+        const calcNum2 = document.getElementById('calcNum2');
+        const calcOp = document.getElementById('calcOp');
+        const calcBtn = document.getElementById('calcBtn');
+        const calcResult = document.getElementById('calcResult');
+
+        const operations = {
+            '+': (a, b) => a + b,
+            '-': (a, b) => a - b,
+            '*': (a, b) => a * b
+        };
+
+        calcBtn.onclick = () => {
+            const num1 = parseFloat(calcNum1.value);
+            const num2 = parseFloat(calcNum2.value);
+            const op = calcOp.value;
+            if (!isNaN(num1) && !isNaN(num2)) {
+                const result = operations[op](num1, num2);
+                calcResult.textContent = `Result: ${result}`;
+            } else {
+                calcResult.textContent = 'Please enter valid numbers.';
+            }
+        };
+    </script>
+</body>
+</html>

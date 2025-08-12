@@ -1,0 +1,32 @@
+/* Custom header style */
+header {
+    padding: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Main content spacing */
+main {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+/* Footer style */
+footer {
+    padding: 15px 0;
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+
+/* Responsive image */
+img.img-fluid {
+    border: 2px solid #007bff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Navbar custom color */
+.navbar {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ce1818;
+}

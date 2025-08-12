@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Report Card</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+     
+</head>
+<body class="bg-info-subtle">
+
+<!-- Header Start -->
+<div class="bg-primary py-4">
+    <div class="container d-flex justify-content-between align-items-center">
+        <h1 class="text-white mb-0 display-4">Student Report Card</h1>
+    </div>
+</div>
+<!-- Header End -->
+
+<!-- Navbar Start -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+  <div class="container">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">About Us</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Services</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Contact Us</a>
+        </li>
+      </ul>
+      <form class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+</nav>
+<!-- Navbar End -->
+
+<div class="container mt-3">
+    <div class="card shadow p-4">
+        <form id="reportForm">
+            <div id="subjectsContainer"></div>
+            <button type="submit" class="btn btn-outline-secondary mt-3">Generate Report</button>
+        </form>
+    </div>
+</div>
+
+<!-- Footer Start -->
+<footer class="bg-primary text-white text-center py-3 mt-5">
+    <div class="container">
+        &copy; 2025 Student Report Card. All rights reserved.
+    </div>
+</footer>
+<!-- Footer End -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="Student.js"></script>
+</body>
+</html>
