@@ -1,112 +1,103 @@
-let menuItems = JSON.parse(localStorage.getItem("menuItems")) || [];
+let editIndex = null;
 
-// Simulated API calls
-function apiCreateItem(item) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            menuItems.push(item);
-            localStorage.setItem("menuItems", JSON.stringify(menuItems));
-            resolve(item);
-        }, 300);
-    });
+function showSection(id) {
+    document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+
+    if (id === "view") renderItems();
 }
 
-function apiGetAllItems() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(menuItems);
-        }, 300);
-    });
-}
-
-function apiUpdateItem(index, updatedItem) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            menuItems[index] = updatedItem;
-            localStorage.setItem("menuItems", JSON.stringify(menuItems));
-            resolve(updatedItem);
-        }, 300);
-    });
-}
-
-function apiDeleteItem(index) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            menuItems.splice(index, 1);
-            localStorage.setItem("menuItems", JSON.stringify(menuItems));
-            resolve();
-        }, 300);
-    });
-}
-
-const menuForm = document.getElementById("menuForm");
-const menuTableBody = document.querySelector("#menuTable tbody");
-
-function renderMenuItems() {
-    menuTableBody.innerHTML = "";
-    menuItems.forEach((item, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${item.name}</td>
-            <td>${item.description}</td>
-            <td>${item.category}</td>
-            <td>₹${item.price}</td>
-            <td>${item.availability}</td>
-            <td>
-                <button class="action-btn edit" onclick="editItem(${index})">Edit</button>
-                <button class="action-btn delete" onclick="deleteItem(${index})">Delete</button>
-            </td>
-        `;
-        menuTableBody.appendChild(row);
-    });
-}
-
-menuForm.addEventListener("submit", function (e) {
+document.getElementById("menuForm").addEventListener("submit", function (e) {
     e.preventDefault();
+
     const newItem = {
         name: document.getElementById("itemName").value,
-        description: document.getElementById("itemDesc").value,
+        description: document.getElementById("itemDescription").value,
         category: document.getElementById("itemCategory").value,
-        price: parseFloat(document.getElementById("itemPrice").value).toFixed(2),
+        price: document.getElementById("itemPrice").value,
         availability: document.getElementById("itemAvailability").value
     };
 
-    const editIndex = document.getElementById("editIndex").value;
-    if (editIndex === "") {
-        apiCreateItem(newItem).then(() => {
-            renderMenuItems();
-            menuForm.reset();
-        });
+    let items = JSON.parse(localStorage.getItem("menuItems")) || [];
+
+    if (editIndex !== null) {
+        items[editIndex] = newItem;
+        editIndex = null;
     } else {
-        if (confirm("Are you sure you want to update this item?")) {
-            apiUpdateItem(editIndex, newItem).then(() => {
-                renderMenuItems();
-                menuForm.reset();
-                document.getElementById("editIndex").value = "";
-                menuForm.querySelector("button").textContent = "Add Item";
-            });
-        }
+        items.push(newItem);
     }
+
+    localStorage.setItem("menuItems", JSON.stringify(items));
+    document.getElementById("menuForm").reset();
+    showSection("view");
 });
 
+function renderItems() {
+    const items = JSON.parse(localStorage.getItem("menuItems")) || [];
+    const tableBody = document.getElementById("menuTableBody");
+    tableBody.innerHTML = "";
+
+    items.forEach((item, index) => {
+        tableBody.innerHTML += `
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.description}</td>
+                <td>${item.category}</td>
+                <td>₹${item.price}</td>
+                <td>${item.availability}</td>
+                <td>
+                    <button onclick="editItem(${index})">Edit</button>
+                    <button onclick="deleteItem(${index})">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
 function editItem(index) {
-    const item = menuItems[index];
+    const items = JSON.parse(localStorage.getItem("menuItems")) || [];
+    const item = items[index];
+
     document.getElementById("itemName").value = item.name;
-    document.getElementById("itemDesc").value = item.description;
+    document.getElementById("itemDescription").value = item.description;
     document.getElementById("itemCategory").value = item.category;
     document.getElementById("itemPrice").value = item.price;
     document.getElementById("itemAvailability").value = item.availability;
-    document.getElementById("editIndex").value = index;
-    menuForm.querySelector("button").textContent = "Update Item";
+
+    editIndex = index;
+    showSection("add");
 }
 
 function deleteItem(index) {
-    if (confirm("Are you sure you want to delete this item?")) {
-        apiDeleteItem(index).then(() => {
-            renderMenuItems();
-        });
-    }
+    let items = JSON.parse(localStorage.getItem("menuItems")) || [];
+    items.splice(index, 1);
+    localStorage.setItem("menuItems", JSON.stringify(items));
+    renderItems();
 }
 
-// Initial load
-apiGetAllItems().then(() => renderMenuItems());
+function searchItems() {
+    const query = document.getElementById("searchBox").value.toLowerCase();
+    const items = JSON.parse(localStorage.getItem("menuItems")) || [];
+    const filtered = items.filter(item =>
+        item.name.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query) ||
+        item.category.toLowerCase().includes(query)
+    );
+    const tableBody = document.getElementById("menuTableBody");
+    tableBody.innerHTML = "";
+    filtered.forEach((item, index) => {
+        tableBody.innerHTML += `
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.description}</td>
+                <td>${item.category}</td>
+                <td>₹${item.price}</td>
+                <td>${item.availability}</td>
+                <td>
+                    <button onclick="editItem(${index})">Edit</button>
+                    <button onclick="deleteItem(${index})">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+}
