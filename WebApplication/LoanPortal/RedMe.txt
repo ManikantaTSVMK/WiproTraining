@@ -1,0 +1,8 @@
+Banks  often allow customers to apply for loans online. The portal needs:
+A form page for customers to submit loan applications.
+Validation and session management for user login.
+Bean classes to store customer data.
+Dynamic page content using JSP scripting elements.
+Forwarding and including pages.
+Application-wide configuration for interest rates.
+Exception handling for errors.
