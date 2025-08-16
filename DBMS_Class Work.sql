@@ -373,3 +373,82 @@ DELIMITER ;
 call  insert_user("Rushi",10);
 
 select * from student;
+
+
+-- 16-08-2025 --
+
+
+
+/*Indexing -- for fast searching , for fast retrieving 
+o(n) -  Binary Search or linear case
+
+O(n) -- select * from customers where city="Delhi"
+We have two types of indexing :
+1) Clustured - The tables' data is stored along with the index itself when we apply a primary key in a database
+   If you don't defing a PK -- then MySQL will  use the first unique key as clustured index in a table , if there is no unique key then it will create
+   a hidden row-id as a clustured index..
+   
+   Fast one because it applied on a Primary key on a actual table itself
+
+2) Non- clustured - the index is stored separately from the actual table data .
+ It contains the column values  plus a pointer(row address / primary key)
+ to the actual table row.
+ 
+ Two look up requires (index+ table ) which is slower than the clustured one
+ 
+ */
+ 
+use wiprotraining;
+create table customers(
+customer_id int auto_increment primary key,
+name varchar(100),
+city varchar(100),
+phone varchar(20)
+);
+
+insert into customers (name , city , phone) values
+('Niti','Delhi','945495'),
+('Nitin','Delhi','9675495'),
+('Jatin','Agra','945566495'),
+('Jiya','Bhimtal','944355495'),
+('Kriti','Up','94235495');
+
+
+Explain select * from customers where city='Delhi' and phoneno="";
+
+create index idx_city on customers(city);
+
+create index idx_name on customers(name);
+
+create index idx_cityname on customers(city,name);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
