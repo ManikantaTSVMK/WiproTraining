@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fetch Employees Data</title>
+</head>
+<body>
+    <h2>Check Console for Employee Data</h2>
+
+    <script>
+        // URL of the JSON endpoint
+        const url = "https://dummy.restapiexample.com/api/v1/employees";
+
+        // Fetch API to get data
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Employee Data:", data);
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+INDEX VERSION 1.134
+file:/D:/Mani%20Wipro/Wipro_Week4_Day2_Assignment/.metadata/.plugins/org.eclipse.jdt.core/1865797976.index
+meta_index

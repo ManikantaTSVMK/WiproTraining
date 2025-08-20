@@ -34,6 +34,7 @@
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/KOMMINENISOMASHEKHAR/.m2/repository/org/springframework/spring-context/5.2.22.RELEASE/spring-context-5.2.22.RELEASE.jar" sourcepath="C:/Users/KOMMINENISOMASHEKHAR/.m2/repository/org/springframework/spring-context/5.2.22.RELEASE/spring-context-5.2.22.RELEASE-sources.jar">

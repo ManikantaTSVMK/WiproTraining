@@ -424,7 +424,7 @@ create index idx_cityname on customers(city,name);
 
 -- > JDBC Connection
 create database wiprojdbc;
-
+use wiprojdbc;
 
 
 
