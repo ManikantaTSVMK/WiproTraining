@@ -1,0 +1,12 @@
+127.0.0.1 - - [19/Aug/2025:20:49:54 +0530] "GET / HTTP/1.1" 404 752
+0:0:0:0:0:0:0:1 - - [19/Aug/2025:20:49:55 +0530] "GET /ContactManager/ HTTP/1.1" 200 530
+0:0:0:0:0:0:0:1 - - [19/Aug/2025:20:49:56 +0530] "GET /favicon.ico HTTP/1.1" 404 763
+0:0:0:0:0:0:0:1 - - [19/Aug/2025:20:52:15 +0530] "GET /ContactManager/addContact.jsp HTTP/1.1" 200 1234
+0:0:0:0:0:0:0:1 - - [19/Aug/2025:20:52:53 +0530] "POST /ContactManager/ContactServlet HTTP/1.1" 302 -
+0:0:0:0:0:0:0:1 - - [19/Aug/2025:20:52:54 +0530] "GET /ContactManager/viewContacts.jsp HTTP/1.1" 200 936
+0:0:0:0:0:0:0:1 - - [19/Aug/2025:20:52:59 +0530] "GET /ContactManager/addContact.jsp HTTP/1.1" 200 1234
+0:0:0:0:0:0:0:1 - - [19/Aug/2025:20:53:01 +0530] "GET /ContactManager/ContactServlet HTTP/1.1" 200 1048
+0:0:0:0:0:0:0:1 - - [19/Aug/2025:20:53:29 +0530] "GET /ContactManager/addContact.jsp HTTP/1.1" 200 1234
+0:0:0:0:0:0:0:1 - - [19/Aug/2025:20:53:31 +0530] "GET /ContactManager/ContactServlet HTTP/1.1" 200 1048
+0:0:0:0:0:0:0:1 - - [19/Aug/2025:20:53:33 +0530] "GET /ContactManager/index.jsp HTTP/1.1" 200 530
+0:0:0:0:0:0:0:1 - - [19/Aug/2025:20:53:35 +0530] "GET /ContactManager/ContactServlet HTTP/1.1" 200 1048

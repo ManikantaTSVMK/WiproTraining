@@ -426,6 +426,16 @@ create index idx_cityname on customers(city,name);
 create database wiprojdbc;
 use wiprojdbc;
 
+USE wiprotraining;
+
+CREATE TABLE todo (
+id BIGINT PRIMARY KEY AUTO_INCREMENT,
+title VARCHAR(255) NOT NULL,
+description TEXT,
+status VARCHAR(50),
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 
 

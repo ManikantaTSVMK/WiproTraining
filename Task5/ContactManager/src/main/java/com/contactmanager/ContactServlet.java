@@ -1,0 +1,232 @@
+package com.contactmanager;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+// You may use annotation instead of web.xml mapping if preferred:
+// import javax.servlet.annotation.WebServlet;
+// @WebServlet("/ContactServlet")
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class ContactServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    // In-memory store
+    private static final List<Contact> contacts = new ArrayList<>();
+    private static final AtomicInteger ID_SEQ = new AtomicInteger(0);
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        String action = param(request, "action");
+
+        switch (action) {
+            case "add":
+                addContact(request, response);
+                break;
+            case "update":
+                updateContact(request, response);
+                break;
+            case "delete":
+                deleteContact(request, response);
+                break;
+            default:
+                setFlash(request, "error", "Unsupported action.");
+                response.sendRedirect("ContactServlet");
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String action = param(request, "action");
+
+        if ("edit".equals(action)) {
+            showEditForm(request, response);
+            return;
+        }
+
+        // default: list view
+        request.setAttribute("contacts", contacts);
+        forward(request, response, "viewContacts.jsp");
+    }
+
+    /* ===== Utilities ===== */
+    private String param(HttpServletRequest req, String name) {
+        String v = req.getParameter(name);
+        return v == null ? "" : v.trim();
+    }
+
+    private void setFlash(HttpServletRequest req, String kind, String msg) {
+        req.getSession().setAttribute("flash_" + kind, msg);
+    }
+
+    private void forward(HttpServletRequest req, HttpServletResponse resp, String jsp)
+            throws ServletException, IOException {
+        RequestDispatcher dispatcher = req.getRequestDispatcher(jsp);
+        dispatcher.forward(req, resp);
+    }
+
+    private Optional<Contact> findById(int id) {
+        return contacts.stream().filter(c -> c.getId() == id).findFirst();
+    }
+
+    private boolean emailExists(String email, Integer excludeId) {
+        if (email == null || email.isEmpty()) return false;
+        final String el = email.toLowerCase();
+        return contacts.stream().anyMatch(c ->
+            c.getEmail() != null
+            && c.getEmail().toLowerCase().equals(el)
+            && (excludeId == null || c.getId() != excludeId)
+        );
+    }
+
+    /* ===== Actions ===== */
+
+    private void addContact(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        String name = param(request, "name");
+        String email = param(request, "email");
+        String phone = param(request, "phone");
+
+        List<String> errors = validate(name, email, phone, null);
+        if (!errors.isEmpty()) {
+            request.setAttribute("errors", errors);
+            request.setAttribute("form_name", name);
+            request.setAttribute("form_email", email);
+            request.setAttribute("form_phone", phone);
+            forward(request, response, "addContact.jsp");
+            return;
+        }
+
+        int id = ID_SEQ.incrementAndGet();
+        contacts.add(new Contact(id, name, email, phone));
+        setFlash(request, "success", "Contact added successfully.");
+        response.sendRedirect("ContactServlet");
+    }
+
+    private void showEditForm(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        String idStr = param(request, "id");
+        int id;
+        try {
+            id = Integer.parseInt(idStr);
+        } catch (NumberFormatException e) {
+            setFlash(request, "error", "Invalid contact id.");
+            response.sendRedirect("ContactServlet");
+            return;
+        }
+
+        Optional<Contact> opt = findById(id);
+        if (opt.isEmpty()) {
+            setFlash(request, "error", "Contact not found.");
+            response.sendRedirect("ContactServlet");
+            return;
+        }
+
+        request.setAttribute("contact", opt.get());
+        forward(request, response, "editContact.jsp");
+    }
+
+    private void updateContact(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        String idStr = param(request, "id");
+        String name = param(request, "name");
+        String email = param(request, "email");
+        String phone = param(request, "phone");
+
+        int id;
+        try {
+            id = Integer.parseInt(idStr);
+        } catch (NumberFormatException e) {
+            setFlash(request, "error", "Invalid contact id.");
+            response.sendRedirect("ContactServlet");
+            return;
+        }
+
+        List<String> errors = validate(name, email, phone, id);
+        if (!errors.isEmpty()) {
+            request.setAttribute("errors", errors);
+            request.setAttribute("contact_id", id);
+            request.setAttribute("form_name", name);
+            request.setAttribute("form_email", email);
+            request.setAttribute("form_phone", phone);
+            forward(request, response, "editContact.jsp");
+            return;
+        }
+
+        Optional<Contact> opt = findById(id);
+        if (opt.isEmpty()) {
+            setFlash(request, "error", "Contact not found.");
+            response.sendRedirect("ContactServlet");
+            return;
+        }
+
+        Contact c = opt.get();
+        c.setName(name);
+        c.setEmail(email);
+        c.setPhone(phone);
+
+        setFlash(request, "success", "Contact updated successfully.");
+        response.sendRedirect("ContactServlet");
+    }
+
+    private void deleteContact(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        String idStr = param(request, "id");
+        int id;
+        try {
+            id = Integer.parseInt(idStr);
+        } catch (NumberFormatException e) {
+            setFlash(request, "error", "Invalid contact id.");
+            response.sendRedirect("ContactServlet");
+            return;
+        }
+
+        boolean removed = contacts.removeIf(c -> c.getId() == id);
+        if (removed) {
+            setFlash(request, "success", "Contact deleted successfully.");
+        } else {
+            setFlash(request, "error", "Contact not found.");
+        }
+        response.sendRedirect("ContactServlet");
+    }
+
+    private List<String> validate(String name, String email, String phone, Integer excludeId) {
+        List<String> errors = new ArrayList<>();
+        if (name == null || name.isBlank()) {
+            errors.add("Name is required.");
+        } else if (name.length() > 100) {
+            errors.add("Name must be ≤100 chars.");
+        }
+
+        if (email == null || email.isBlank()) {
+            errors.add("Email is required.");
+        } else {
+            String rx = "^[\\w._%+-]+@[\\w.-]+\\.[A-Za-z]{2,}$";
+            if (!email.matches(rx)) {
+                errors.add("Invalid email format.");
+            } else if (emailExists(email, excludeId)) {
+                errors.add("Email already exists.");
+            }
+        }
+
+        if (phone == null || phone.isBlank()) {
+            errors.add("Phone is required.");
+        } else {
+            String prx = "^[0-9+()\\-\\.\\s]{5,20}$";
+            if (!phone.matches(prx)) {
+                errors.add("Invalid phone format.");
+            }
+        }
+        return errors;
+    }
+}
