@@ -1,0 +1,9 @@
+eclipse.preferences.version=1
+encoding//src/main/webapp/WEB-INF/views/admin-dashboard.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/admin-task-comments.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/admin-users.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/register.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/task-details.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/task-form.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/user-dashboard.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/user-tasks.jsp=UTF-8

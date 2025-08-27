@@ -437,7 +437,8 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 
-
+create database sampleproject;
+use sampleproject;
 
 
 
