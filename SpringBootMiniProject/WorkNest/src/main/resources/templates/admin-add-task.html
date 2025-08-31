@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Task - WorkNest</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0d9488 0%, #06b6d4 50%, #3b82f6 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(209, 213, 219, 0.3);
+        }
+        .admin-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .form-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .dropdown {
+            position: relative;
+        }
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        .dropdown-content.show {
+            display: block;
+        }
+        .dropdown-item {
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .dropdown-item:hover {
+            background-color: #f9fafb;
+        }
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .selected-user {
+            background-color: #ecfdf5;
+            border-color: #10b981;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">WorkNest</h1>
+                        <span class="admin-badge">Add Task</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a th:href="@{/admin/dashboard}" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center space-x-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Back to Dashboard</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <nav class="flex items-center space-x-2 text-sm">
+                <a href="/admin/dashboard" class="text-teal-600 hover:text-teal-800 transition-colors duration-300">Admin Dashboard</a>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+                <span class="text-gray-500">Add Task</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="glass-effect rounded-xl p-8 form-slide-in">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2 flex items-center">
+                    <i class="fas fa-plus-circle text-teal-600 mr-3"></i>
+                    Create New Task
+                </h2>
+                <p class="text-gray-600">Fill in the details below to create a new task for your team</p>
+            </div>
+
+            <form th:action="@{/admin/tasks}" method="post" class="space-y-8">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                
+                <!-- Task Details Section -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-info-circle text-teal-600 mr-2"></i>
+                        Task Details
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Title Field -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-heading mr-2 text-teal-600"></i>Task Title *
+                            </label>
+                            <input type="text" 
+                                   name="title" 
+                                   placeholder="Enter a descriptive task title" 
+                                   required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 text-lg" />
+                        </div>
+
+                        <!-- Description Field -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-align-left mr-2 text-teal-600"></i>Description
+                            </label>
+                            <textarea name="description" 
+                                      placeholder="Provide additional details about the task (optional)" 
+                                      rows="4"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 resize-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assignment Section -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-users text-teal-600 mr-2"></i>
+                        Task Assignment
+                    </h3>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-user-check mr-2 text-teal-600"></i>Assignees
+                        </label>
+                        <div class="dropdown">
+                            <div id="dropdownBtn" 
+                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg cursor-pointer bg-white hover:border-teal-500 transition-colors duration-300 flex items-center justify-between"
+                                 onclick="toggleDropdown()">
+                                <span class="text-gray-500">Select team members to assign this task</span>
+                                <i class="fas fa-chevron-down transform transition-transform duration-300"></i>
+                            </div>
+                            <div id="dropdownList" class="dropdown-content">
+                                <div class="p-3 border-b border-gray-200">
+                                    <input type="text" 
+                                           id="userSearch" 
+                                           placeholder="Search users..." 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-teal-500 focus:border-transparent text-sm"
+                                           onkeyup="filterUsers()">
+                                </div>
+                                <div th:each="u : ${users}" class="dropdown-item user-item" th:data-username="${u.username}">
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="checkbox" 
+                                               name="assigneeIds" 
+                                               th:value="${u.id}" 
+                                               onchange="updateSelection()"
+                                               class="mr-3 text-teal-600 focus:ring-teal-500 rounded">
+                                        <div class="w-8 h-8 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-white text-sm font-semibold mr-3">
+                                            <span th:text="${#strings.substring(u.username, 0, 1).toUpperCase()}">U</span>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium text-gray-900" th:text="${u.username}">Username</div>
+                                            <div class="text-sm text-gray-500" th:text="${u.role}">Role</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="selectedUsers" class="mt-3 flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- Timeline Section -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-calendar-alt text-teal-600 mr-2"></i>
+                        Timeline
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Start Date -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-play mr-2 text-teal-600"></i>Start Date *
+                            </label>
+                            <input type="date" 
+                                   name="startDate" 
+                                   required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300" />
+                        </div>
+
+                        <!-- Due Date -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-flag-checkered mr-2 text-teal-600"></i>Due Date *
+                            </label>
+                            <input type="date" 
+                                   name="dueDate" 
+                                   required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                    <button type="submit" 
+                            class="flex-1 bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-4 px-6 rounded-lg font-semibold hover:from-teal-700 hover:to-cyan-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Create Task</span>
+                    </button>
+                    
+                    <a th:href="@{/admin/dashboard}" 
+                       class="flex-1 sm:flex-none bg-gray-500 hover:bg-gray-600 text-white py-4 px-6 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2">
+                        <i class="fas fa-times"></i>
+                        <span>Cancel</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="text-center">
+                <p class="text-gray-500 text-sm">© 2025 WorkNest Task Management. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let selectedUserIds = [];
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById("dropdownList");
+            const chevron = document.querySelector("#dropdownBtn i");
+            
+            dropdown.classList.toggle("show");
+            
+            if (dropdown.classList.contains("show")) {
+                chevron.style.transform = "rotate(180deg)";
+            } else {
+                chevron.style.transform = "rotate(0deg)";
+            }
+        }
+
+        function updateSelection() {
+            const checkboxes = document.querySelectorAll('input[name="assigneeIds"]:checked');
+            const selected = [];
+            const selectedContainer = document.getElementById("selectedUsers");
+            const dropdownBtn = document.querySelector("#dropdownBtn span");
+            
+            selectedUserIds = [];
+            selectedContainer.innerHTML = "";
+            
+            checkboxes.forEach(cb => {
+                const username = cb.closest('.dropdown-item').querySelector('.font-medium').textContent;
+                const userId = cb.value;
+                selected.push(username);
+                selectedUserIds.push(userId);
+                
+                // Create selected user badge
+                const badge = document.createElement('div');
+                badge.className = 'bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-2';
+                badge.innerHTML = `
+                    <span>${username}</span>
+                    <button type="button" onclick="removeUser('${userId}')" class="text-teal-600 hover:text-teal-800">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                selectedContainer.appendChild(badge);
+            });
+
+            if (selected.length > 0) {
+                dropdownBtn.textContent = `${selected.length} user${selected.length > 1 ? 's' : ''} selected`;
+                dropdownBtn.className = "text-gray-900";
+            } else {
+                dropdownBtn.textContent = "Select team members to assign this task";
+                dropdownBtn.className = "text-gray-500";
+            }
+        }
+
+        function removeUser(userId) {
+            const checkbox = document.querySelector(`input[name="assigneeIds"][value="${userId}"]`);
+            if (checkbox) {
+                checkbox.checked = false;
+                updateSelection();
+            }
+        }
+
+        function filterUsers() {
+            const searchTerm = document.getElementById("userSearch").value.toLowerCase();
+            const userItems = document.querySelectorAll('.user-item');
+            
+            userItems.forEach(item => {
+                const username = item.dataset.username.toLowerCase();
+                if (username.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Close dropdown if clicked outside
+        window.onclick = function(event) {
+            if (!event.target.closest('.dropdown')) {
+                const dropdown = document.getElementById("dropdownList");
+                const chevron = document.querySelector("#dropdownBtn i");
+                
+                dropdown.classList.remove('show');
+                chevron.style.transform = "rotate(0deg)";
+            }
+        }
+
+        // Form validation and loading states
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const startDateInput = document.querySelector('input[name="startDate"]');
+            const dueDateInput = document.querySelector('input[name="dueDate"]');
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            startDateInput.min = today;
+            dueDateInput.min = today;
+            
+            // Update due date minimum when start date changes
+            startDateInput.addEventListener('change', function() {
+                dueDateInput.min = this.value;
+                if (dueDateInput.value && dueDateInput.value < this.value) {
+                    dueDateInput.value = this.value;
+                }
+            });
+            
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating Task...';
+                submitBtn.disabled = true;
+                
+                // Re-enable after 5 seconds (in case of error)
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 5000);
+            });
+
+            // Auto-focus title field
+            document.querySelector('input[name="title"]').focus();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'977d2663849147eb',t:'MTc1NjY0OTgzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

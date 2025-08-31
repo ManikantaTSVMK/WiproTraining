@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Task Details - WorkNest</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0d9488 0%, #06b6d4 50%, #3b82f6 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(209, 213, 219, 0.3);
+        }
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-in-progress { background-color: #dbeafe; color: #1e40af; }
+        .status-completed { background-color: #d1fae5; color: #065f46; }
+        .status-delayed { background-color: #fee2e2; color: #991b1b; }
+        .comment-timeline { position: relative; }
+        .comment-timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #14b8a6, #06b6d4);
+        }
+        .comment-item { margin-left: 50px; padding-bottom: 20px; position: relative; }
+        .comment-avatar {
+            position: absolute;
+            left: -38px;
+            top: 0;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #14b8a6, #06b6d4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-white text-xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold text-white">WorkNest</h1>
+                </div>
+                <a th:href="@{/user/dashboard}" 
+                   class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center space-x-2">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <nav class="flex items-center space-x-2 text-sm">
+                <a th:href="@{/user/dashboard}" class="text-teal-600 hover:text-teal-800">Dashboard</a>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+                <span class="text-gray-500">Task Details</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Task Information -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Task Header -->
+                <div class="glass-effect rounded-xl p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <h2 class="text-3xl font-bold text-gray-900" th:text="${task.title}">Task Title</h2>
+                        <div>
+                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full"
+                                  th:if="${task.status.name() == 'COMPLETED'}"
+                                  th:class="'status-completed'"
+                                  th:text="${task.status}">COMPLETED</span>
+                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full"
+                                  th:if="${task.status.name() != 'COMPLETED' and task.dueDate != null and task.dueDate.isBefore(today)}"
+                                  th:class="'status-delayed'">DELAYED</span>
+                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full"
+                                  th:if="${task.status.name() != 'COMPLETED' and (task.dueDate == null or !task.dueDate.isBefore(today))}"
+                                  th:class="${task.status.name() == 'PENDING' ? 'status-pending' : 'status-in-progress'}"
+                                  th:text="${task.status}">PENDING</span>
+                        </div>
+                    </div>
+
+                    <!-- Task Details Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-play text-teal-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Start Date</p>
+                                <p class="text-lg font-semibold text-gray-900" th:text="${task.startDate}">2025-01-01</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-calendar-alt text-red-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Due Date</p>
+                                <p class="text-lg font-semibold text-gray-900" th:text="${task.dueDate}">2025-01-02</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                            <i class="fas fa-file-alt text-teal-600 mr-2"></i>
+                            Description
+                        </h3>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <p class="text-gray-700" th:if="${task.description != null and !#strings.isEmpty(task.description)}"
+                               th:text="${task.description}">Task description goes here</p>
+                            <p class="text-gray-500 italic" th:if="${task.description == null or #strings.isEmpty(task.description)}">
+                               No description provided
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments Section -->
+                <div class="glass-effect rounded-xl p-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-comments text-teal-600 mr-3"></i>
+                        Comments
+                    </h3>
+
+                    <div class="comment-timeline mb-8" th:if="${!#lists.isEmpty(comments)}">
+                        <div class="comment-item" th:each="c : ${comments}">
+                            <div class="comment-avatar" th:text="${#strings.substring(c.author.username,0,1).toUpperCase()}">U</div>
+                            <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-semibold text-gray-900" th:text="${c.author.username}">Username</h4>
+                                    <span class="text-sm text-gray-500" th:text="${#temporals.format(c.createdAt,'MMM dd, yyyy HH:mm')}">Jan 01, 2025 10:30</span>
+                                </div>
+                                <p class="text-gray-700" th:text="${c.content}">Comment content</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center py-8" th:if="${#lists.isEmpty(comments)}">
+                        <i class="fas fa-comment-slash text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-gray-500 text-lg">No comments yet</p>
+                        <p class="text-gray-400">Be the first to add a comment!</p>
+                    </div>
+
+                    <!-- Add Comment Form -->
+                    <div class="border-t border-gray-200 pt-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Add a Comment</h4>
+                        <form th:action="@{|/user/tasks/${task.id}/comments|}" method="post" class="space-y-4">
+                            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <textarea name="content" rows="4" required placeholder="Write your comment here..."
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 resize-none"></textarea>
+                            <div class="flex justify-end">
+                                <button type="submit"
+                                        class="bg-gradient-to-r from-teal-600 to-cyan-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-teal-700 hover:to-cyan-700 flex items-center space-x-2">
+                                    <i class="fas fa-paper-plane"></i>
+                                    <span>Post Comment</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Status Update -->
+                <div class="glass-effect rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-edit text-teal-600 mr-2"></i>
+                        Update Status
+                    </h3>
+                    <form th:action="@{|/user/tasks/${task.id}/status|}" method="post" class="space-y-4">
+                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <select name="status"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+                            <option th:selected="${task.status.name() == 'PENDING'}" value="PENDING">Pending</option>
+                            <option th:selected="${task.status.name() == 'IN_PROGRESS'}" value="IN_PROGRESS">In Progress</option>
+                            <option th:selected="${task.status.name() == 'COMPLETED'}" value="COMPLETED">Completed</option>
+                        </select>
+                        <button type="submit"
+                                class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-teal-700 hover:to-cyan-700 flex items-center justify-center space-x-2">
+                            <i class="fas fa-save"></i>
+                            <span>Save Status</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Assignee (Single) -->
+                <div class="glass-effect rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-user text-teal-600 mr-2"></i>
+                        Assignee
+                    </h3>
+                    <div th:if="${task.assignee != null}" class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            <span th:text="${#strings.substring(task.assignee.username,0,1).toUpperCase()}">U</span>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900" th:text="${task.assignee.username}">Username</p>
+                            <p class="text-sm text-gray-500">Task Owner</p>
+                        </div>
+                    </div>
+                    <div th:if="${task.assignee == null}" class="text-center py-4">
+                        <i class="fas fa-user-slash text-gray-400 text-2xl mb-2"></i>
+                        <p class="text-gray-500">No assignee</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
+            <p class="text-gray-500 text-sm">© 2025 WorkNest. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

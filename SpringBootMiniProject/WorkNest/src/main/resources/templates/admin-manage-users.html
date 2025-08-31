@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Users - WorkNest</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0d9488 0%, #06b6d4 50%, #3b82f6 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(209, 213, 219, 0.3);
+        }
+        .role-user { background-color: #dbeafe; color: #1e40af; }
+        .role-admin { background-color: #fef3c7; color: #92400e; }
+        .admin-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .form-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">WorkNest</h1>
+                        <span class="admin-badge">User Management</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a th:href="@{/admin/dashboard}" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center space-x-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Back to Dashboard</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <nav class="flex items-center space-x-2 text-sm">
+                <a href="/admin/dashboard" class="text-teal-600 hover:text-teal-800 transition-colors duration-300">Admin Dashboard</a>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+                <span class="text-gray-500">Manage Users</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Users Table -->
+            <div class="lg:col-span-2">
+                <div class="glass-effect rounded-xl overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-users text-teal-600 mr-3"></i>
+                            System Users
+                        </h3>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <i class="fas fa-hashtag mr-2"></i>#
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <i class="fas fa-user mr-2"></i>User
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <i class="fas fa-shield-alt mr-2"></i>Role
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <i class="fas fa-cog mr-2"></i>Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr th:each="u, iStat : ${users}" class="hover:bg-gray-50 transition-colors duration-200">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${iStat.count}">1</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold mr-3">
+                                                <span th:text="${#strings.substring(u.username, 0, 1).toUpperCase()}">U</span>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900" th:text="${u.username}">Username</div>
+                                                <div class="text-sm text-gray-500">System User</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full"
+                                              th:class="${u.role == 'ADMIN' ? 'role-admin' : 'role-user'}"
+                                              th:text="${u.role}">USER</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex items-center space-x-2">
+                                            <!-- Edit Button -->
+                                            <a th:href="@{|/admin/users/${u.id}/edit|}" 
+                                               class="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 rounded-lg transition-colors duration-300 inline-flex items-center space-x-1">
+                                                <i class="fas fa-edit"></i>
+                                                <span>Edit</span>
+                                            </a>
+
+                                            <!-- Delete Form -->
+                                            <form th:action="@{|/admin/users/${u.id}/delete|}" method="post" class="inline">
+                                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                                <button type="submit" 
+                                                        onclick="return confirm('Are you sure you want to delete this user?')"
+                                                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg transition-colors duration-300 inline-flex items-center space-x-1">
+                                                    <i class="fas fa-trash"></i>
+                                                    <span>Delete</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(users)}">
+                                    <td colspan="4" class="px-6 py-12 text-center">
+                                        <div class="flex flex-col items-center">
+                                            <i class="fas fa-users-slash text-gray-400 text-4xl mb-4"></i>
+                                            <p class="text-gray-500 text-lg">No users found</p>
+                                            <p class="text-gray-400 text-sm">Add your first user to get started</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add/Edit User Form -->
+            <div class="lg:col-span-1">
+                <div class="glass-effect rounded-xl p-6 form-slide-in">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-user-plus text-teal-600 mr-3" th:if="${editUser == null}"></i>
+                        <i class="fas fa-user-edit text-teal-600 mr-3" th:if="${editUser != null}"></i>
+                        <span th:text="${editUser != null} ? 'Edit User' : 'Add New User'">Add New User</span>
+                    </h3>
+
+                    <!-- Error Message -->
+                    <div th:if="${errorMessage}" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle text-red-600 mr-2"></i>
+                            <span class="text-red-800 font-medium" th:text="${errorMessage}">Error message here</span>
+                        </div>
+                    </div>
+
+                    <form th:action="${editUser != null} ? @{/admin/users/{id}/update(id=${editUser.id})} : @{/admin/users}" method="post" class="space-y-6">
+                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                        <!-- Username Field -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user mr-2 text-teal-600"></i>Username
+                            </label>
+                            <input type="text" 
+                                   name="username" 
+                                   placeholder="Enter username" 
+                                   required
+                                   th:value="${editUser != null} ? ${editUser.username} : ''"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300" />
+                        </div>
+
+                        <!-- Password Field -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-lock mr-2 text-teal-600"></i>Password
+                                <span class="text-gray-500 text-xs" th:if="${editUser != null}">(leave blank to keep current)</span>
+                            </label>
+                            <input type="password" 
+                                   name="password" 
+                                   placeholder="Enter password"
+                                   th:attr="required=${editUser == null}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300" />
+                        </div>
+
+                        <!-- Role Field -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-shield-alt mr-2 text-teal-600"></i>Role
+                            </label>
+                            <select name="role" 
+                                    required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300">
+                                <option value="USER" th:selected="${editUser != null and editUser.role == 'USER'}">USER</option>
+                                <option value="ADMIN" th:selected="${editUser != null and editUser.role == 'ADMIN'}">ADMIN</option>
+                            </select>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col space-y-3">
+                            <button type="submit" 
+                                    class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-teal-700 hover:to-cyan-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2">
+                                <i class="fas fa-save"></i>
+                                <span th:text="${editUser != null} ? 'Update User' : 'Add User'">Add User</span>
+                            </button>
+
+                            <!-- Cancel Edit Button -->
+                            <a th:href="@{/admin/manage-users}" th:if="${editUser != null}"
+                               class="w-full bg-gray-500 hover:bg-gray-600 text-white py-3 px-4 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2">
+                                <i class="fas fa-times"></i>
+                                <span>Cancel</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="text-center">
+                <p class="text-gray-500 text-sm">© 2025 WorkNest User Management. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add loading state to forms
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    if (submitBtn && !submitBtn.onclick) { // Don't interfere with delete confirmation
+                        const originalText = submitBtn.innerHTML;
+                        
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+                        submitBtn.disabled = true;
+                        
+                        // Re-enable after 3 seconds (in case of error)
+                        setTimeout(() => {
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                        }, 3000);
+                    }
+                });
+            });
+
+            // Add loading state to back button
+            const backButton = document.querySelector('a[href*="/admin/dashboard"]');
+            if (backButton) {
+                backButton.addEventListener('click', function() {
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Loading...</span>';
+                });
+            }
+
+            // Add loading state to edit buttons
+            const editButtons = document.querySelectorAll('a[href*="/edit"]');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    const text = this.querySelector('span');
+                    
+                    icon.className = 'fas fa-spinner fa-spin';
+                    text.textContent = 'Loading...';
+                });
+            });
+
+            // Auto-focus username field if it's empty
+            const usernameField = document.querySelector('input[name="username"]');
+            if (usernameField && !usernameField.value) {
+                usernameField.focus();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'977d1ff3d59b47eb',t:'MTc1NjY0OTU2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

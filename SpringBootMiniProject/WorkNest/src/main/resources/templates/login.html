@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login - WorkNest</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0d9488 0%, #06b6d4 50%, #3b82f6 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.75);
+            border: 1px solid rgba(209, 213, 219, 0.3);
+        }
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        .pulse-glow {
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.4);
+            animation: pulse-glow 2s infinite;
+        }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 20px rgba(20, 184, 166, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(20, 184, 166, 0.6); }
+            100% { box-shadow: 0 0 20px rgba(20, 184, 166, 0.4); }
+        }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg flex flex-col">
+    <!-- Header -->
+    <header class="bg-white/10 backdrop-blur-md border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-white text-xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold text-white">WorkNest</h1>
+                </div>
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-white/80 hover:text-white transition-colors duration-300">Home</a>
+                    <a href="#" class="text-white/80 hover:text-white transition-colors duration-300">About</a>
+                    <a href="#" class="text-white/80 hover:text-white transition-colors duration-300">Contact</a>
+                    <a href="#" class="text-white/80 hover:text-white transition-colors duration-300">Help</a>
+                </nav>
+                <button class="md:hidden text-white">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex items-center justify-center px-4 py-12">
+        <div class="w-full max-w-md">
+            <!-- Floating Decorative Elements -->
+            <div class="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full floating-animation"></div>
+            <div class="absolute top-40 right-20 w-16 h-16 bg-white/10 rounded-full floating-animation" style="animation-delay: -2s;"></div>
+            <div class="absolute bottom-40 left-20 w-12 h-12 bg-white/10 rounded-full floating-animation" style="animation-delay: -4s;"></div>
+            
+            <!-- Login Card -->
+            <div class="glass-effect rounded-2xl shadow-2xl p-8 relative z-10">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4 pulse-glow">
+                        <i class="fas fa-user text-white text-2xl"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h2>
+                    <p class="text-gray-600">Please sign in to your account</p>
+                </div>
+
+                <form action="/login" method="post" class="space-y-6">
+                    <div class="space-y-4">
+                        <div class="relative">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user mr-2 text-teal-500"></i>Username
+                            </label>
+                            <input 
+                                type="text" 
+                                name="username" 
+                                required 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white/80 backdrop-blur-sm"
+                                placeholder="Enter your username"
+                            />
+                        </div>
+                        
+                        <div class="relative">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-lock mr-2 text-teal-500"></i>Password
+                            </label>
+                            <input 
+                                type="password" 
+                                name="password" 
+                                required 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300 bg-white/80 backdrop-blur-sm"
+                                placeholder="Enter your password"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+                            <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                        </label>
+                        <a href="#" class="text-sm text-teal-600 hover:text-teal-800 transition-colors duration-300">
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-teal-700 hover:to-cyan-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+                    >
+                        <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                    </button>
+                </form>
+
+                <!-- Error Message -->
+                <div th:if="${error}" class="mt-4 p-4 bg-red-100 border border-red-300 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                        <p class="text-red-700 text-sm" th:text="${error}"></p>
+                    </div>
+                </div>
+
+                <!-- Register Link -->
+                <div class="mt-8 text-center">
+                    <p class="text-gray-600">
+                        Don't have an account? 
+                        <a href="/register" class="text-teal-600 hover:text-teal-800 font-semibold transition-colors duration-300">
+                            Register here
+                        </a>
+                    </p>
+                </div>
+
+                <!-- Social Login Options -->
+                
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white/10 backdrop-blur-md border-t border-white/20 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="text-center">
+                <p class="text-white/60 text-sm">© 2025 WorkNest. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Add smooth hover effects and form validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const inputs = document.querySelectorAll('input[type="text"], input[type="password"]');
+            
+            // Add focus effects to inputs
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('transform', 'scale-105');
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('transform', 'scale-105');
+                });
+            });
+            
+            // Form submission with loading state
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Signing In...';
+                submitBtn.disabled = true;
+                
+                // Re-enable after 3 seconds (in case of error)
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 3000);
+            });
+            
+            // Add click effects to social buttons
+            const socialButtons = document.querySelectorAll('.grid button');
+            socialButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.classList.add('transform', 'scale-95');
+                    setTimeout(() => {
+                        this.classList.remove('transform', 'scale-95');
+                    }, 150);
+                });
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'977ce836878c2e33',t:'MTc1NjY0NzI4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
