@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Groups - WorkNest</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0d9488 0%, #06b6d4 50%, #3b82f6 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(209, 213, 219, 0.3);
+        }
+        .group-badge {
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .form-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .member-tag {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            margin: 1px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">WorkNest</h1>
+                        <span class="group-badge">Group Management</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a th:href="@{/admin/dashboard}" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center space-x-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Back to Dashboard</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <nav class="flex items-center space-x-2 text-sm">
+                <a href="/admin/dashboard" class="text-teal-600 hover:text-teal-800 transition-colors duration-300">Admin Dashboard</a>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+                <span class="text-gray-500">Manage Groups</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Groups Table -->
+            <div class="lg:col-span-2">
+                <div class="glass-effect rounded-xl overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-users-cog text-teal-600 mr-3"></i>
+                            System Groups
+                        </h3>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <i class="fas fa-hashtag mr-2"></i>#</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <i class="fas fa-users mr-2"></i>Group Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <i class="fas fa-user-friends mr-2"></i>Members</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <i class="fas fa-cog mr-2"></i>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr th:each="g, iStat : ${groups}" class="hover:bg-gray-50 transition-colors duration-200">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${iStat.count}">1</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold mr-3">
+                                                <span th:text="${#strings.substring(g.name,0,1).toUpperCase()}">G</span>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900" th:text="${g.name}">Group Name</div>
+                                                <div class="text-sm text-gray-500">Team Group</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-wrap">
+                                            <span th:each="member : ${g.members}" class="member-tag" th:text="${member.username}">Member</span>
+                                        </div>
+                                        <div th:if="${#lists.isEmpty(g.members)}" class="text-sm text-gray-400 italic">No members</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex items-center space-x-2">
+                                            <!-- Edit Button -->
+                                            <a th:href="@{|/admin/groups/${g.id}/edit|}"
+                                               class="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 rounded-lg transition-colors duration-300 inline-flex items-center space-x-1">
+                                                <i class="fas fa-edit"></i>
+                                                <span>Edit</span>
+                                            </a>
+
+                                            <!-- Delete Form -->
+                                            <form th:action="@{|/admin/groups/${g.id}/delete|}" method="post" class="inline">
+                                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                                <button type="submit"
+                                                        onclick="return confirm('Are you sure you want to delete this group? This will affect all associated tasks.')"
+                                                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg transition-colors duration-300 inline-flex items-center space-x-1">
+                                                    <i class="fas fa-trash"></i>
+                                                    <span>Delete</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(groups)}">
+                                    <td colspan="4" class="px-6 py-12 text-center">
+                                        <div class="flex flex-col items-center">
+                                            <i class="fas fa-users-slash text-gray-400 text-4xl mb-4"></i>
+                                            <p class="text-gray-500 text-lg">No groups found</p>
+                                            <p class="text-gray-400 text-sm">Create your first group to get started</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add/Edit Group Form -->
+            <div class="lg:col-span-1">
+                <div class="glass-effect rounded-xl p-6 form-slide-in">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-user-plus text-teal-600 mr-3" th:if="${editGroup == null}"></i>
+                        <i class="fas fa-user-edit text-teal-600 mr-3" th:if="${editGroup != null}"></i>
+                        <span th:text="${editGroup != null} ? 'Edit Group' : 'Add New Group'">Add New Group</span>
+                    </h3>
+
+                    <!-- Error Message -->
+                    <div th:if="${errorMessage}" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle text-red-600 mr-2"></i>
+                            <span class="text-red-800 font-medium" th:text="${errorMessage}">Error message here</span>
+                        </div>
+                    </div>
+
+                    <form th:action="${editGroup != null} ? @{/admin/groups/{id}/update(id=${editGroup.id})} : @{/admin/groups}" method="post" class="space-y-6">
+                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                        <!-- Group Name Field -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-users text-teal-600 mr-2"></i>Group Name
+                            </label>
+                            <input type="text"
+                                   name="name"
+                                   placeholder="Enter group name"
+                                   required
+                                   th:value="${editGroup != null} ? ${editGroup.name} : ''"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300" />
+                        </div>
+
+                        <!-- Members Field -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user-friends text-teal-600 mr-2"></i>Group Members
+                            </label>
+                            <div class="max-h-48 overflow-y-auto border border-gray-300 rounded-lg p-3">
+                                <div th:each="user : ${users}" class="flex items-center space-x-3 mb-2">
+                                    <input type="checkbox"
+                                           th:id="'user-' + ${user.id}"
+                                           name="memberIds"
+                                           th:value="${user.id}"
+                                           th:checked="${editGroup != null and editGroup.members.contains(user)}"
+                                           class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500" />
+                                    <label th:for="'user-' + ${user.id}" class="text-sm font-medium text-gray-900 cursor-pointer">
+                                        <span th:text="${user.username}">Username</span>
+                                        <span class="text-xs text-gray-500 ml-2" th:text="'(' + ${user.role} + ')'">(ROLE)</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2">Select users to add to this group</p>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col space-y-3">
+                            <button type="submit"
+                                    class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-teal-700 hover:to-cyan-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2">
+                                <i class="fas fa-save"></i>
+                                <span th:text="${editGroup != null} ? 'Update Group' : 'Create Group'">Create Group</span>
+                            </button>
+
+                            <!-- Cancel Edit Button -->
+                            <a th:href="@{/admin/manage-groups}" th:if="${editGroup != null}"
+                               class="w-full bg-gray-500 hover:bg-gray-600 text-white py-3 px-4 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2">
+                                <i class="fas fa-times"></i>
+                                <span>Cancel</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="text-center">
+                <p class="text-gray-500 text-sm">© 2025 WorkNest Group Management. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add loading state to forms
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    if (submitBtn && !submitBtn.onclick) { // Don't interfere with delete confirmation
+                        const originalText = submitBtn.innerHTML;
+
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+                        submitBtn.disabled = true;
+
+                        // Re-enable after 3 seconds (in case of error)
+                        setTimeout(() => {
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                        }, 3000);
+                    }
+                });
+            });
+
+            // Add loading state to back button
+            const backButton = document.querySelector('a[href*="/admin/dashboard"]');
+            if (backButton) {
+                backButton.addEventListener('click', function() {
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Loading...</span>';
+                });
+            }
+
+            // Add loading state to edit buttons
+            const editButtons = document.querySelectorAll('a[href*="/edit"]');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    const text = this.querySelector('span');
+
+                    icon.className = 'fas fa-spinner fa-spin';
+                    text.textContent = 'Loading...';
+                });
+            });
+
+            // Auto-focus group name field if it's empty
+            const groupNameField = document.querySelector('input[name="name"]');
+            if (groupNameField && !groupNameField.value) {
+                groupNameField.focus();
+            }
+
+            // Select all/none functionality for members
+            const memberCheckboxes = document.querySelectorAll('input[name="memberIds"]');
+            if (memberCheckboxes.length > 0) {
+                // Add select all/none buttons
+                const membersContainer = document.querySelector('.max-h-48');
+                if (membersContainer) {
+                    const controlsDiv = document.createElement('div');
+                    controlsDiv.className = 'flex justify-between items-center mb-3 pb-2 border-b border-gray-200';
+                    controlsDiv.innerHTML = `
+                        <button type="button" id="selectAllBtn" class="text-sm text-teal-600 hover:text-teal-800 font-medium">Select All</button>
+                        <button type="button" id="selectNoneBtn" class="text-sm text-gray-600 hover:text-gray-800 font-medium">Select None</button>
+                    `;
+                    membersContainer.insertBefore(controlsDiv, membersContainer.firstChild);
+
+                    // Add event listeners
+                    document.getElementById('selectAllBtn').addEventListener('click', function() {
+                        memberCheckboxes.forEach(cb => cb.checked = true);
+                    });
+
+                    document.getElementById('selectNoneBtn').addEventListener('click', function() {
+                        memberCheckboxes.forEach(cb => cb.checked = false);
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>

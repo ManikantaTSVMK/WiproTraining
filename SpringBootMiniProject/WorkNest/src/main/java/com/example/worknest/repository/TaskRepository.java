@@ -23,4 +23,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     // 🔹 Count overdue tasks (due date passed but not completed)
     long countByDueDateBeforeAndStatusNot(LocalDate date, TaskStatus status);
+
+    // 🔹 Find tasks by group member (tasks assigned to groups where user is a member)
+    List<Task> findByGroup_Members_Id(Long userId);
+
+    // 🔹 Find all group tasks (tasks assigned to groups)
+    List<Task> findByGroupIsNotNull();
 }

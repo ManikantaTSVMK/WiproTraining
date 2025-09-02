@@ -20,17 +20,21 @@ public class AdminController {
     private final UserService userService;
     private final TaskService taskService;
     private final TaskCommentService commentService;
+    private final GroupService groupService;
 
-    // DTO to show Task + Assignee in dashboard
+    // DTO to show Task + Assignee/Group in dashboard
     public static class TaskRow {
         private final Task task;
         private final User assignee;
-        public TaskRow(Task task, User assignee) {
+        private final Group group;
+        public TaskRow(Task task, User assignee, Group group) {
             this.task = task;
             this.assignee = assignee;
+            this.group = group;
         }
         public Task getTask() { return task; }
         public User getAssignee() { return assignee; }
+        public Group getGroup() { return group; }
     }
 
     // ✅ Admin authentication/authorization check
@@ -69,9 +73,15 @@ public class AdminController {
             default            -> taskService.findByStatus(TaskStatus.PENDING);
         };
 
+        // Include group tasks for filtered views (ALL already includes all tasks)
+        if (!"ALL".equals(filter.toUpperCase())) {
+            List<Task> groupTasks = taskService.findAllGroupTasksForAdmin();
+            tasks.addAll(groupTasks);
+        }
+
         // Prepare rows
         List<TaskRow> rows = tasks.stream()
-                .map(t -> new TaskRow(t, t.getAssignee()))
+                .map(t -> new TaskRow(t, t.getAssignee(), t.getGroup()))
                 .toList();
         model.addAttribute("rows", rows);
 
@@ -94,6 +104,7 @@ public class AdminController {
         String gate = requireAdmin(session);
         if (gate != null) return gate;
         model.addAttribute("users", userService.findAll());
+        model.addAttribute("groups", groupService.findAll());
         return "admin-add-task";
     }
 
@@ -105,6 +116,17 @@ public class AdminController {
         model.addAttribute("users", userService.findAll());
         model.addAttribute("editUser", model.getAttribute("editUser"));
         return "admin-manage-users";
+    }
+
+    @GetMapping("/manage-groups")
+    public String showManageGroupsPage(Model model, HttpSession session) {
+        String gate = requireAdmin(session);
+        if (gate != null) return gate;
+
+        model.addAttribute("groups", groupService.findAll());
+        model.addAttribute("users", userService.findAll());
+        model.addAttribute("editGroup", model.getAttribute("editGroup"));
+        return "admin-manage-groups";
     }
 
     @GetMapping("/users/{id}/edit")
@@ -167,6 +189,90 @@ public class AdminController {
         return "redirect:/admin/manage-users";
     }
 
+    // ===================== Group CRUD =====================
+
+    @PostMapping("/groups")
+    public String addGroup(@RequestParam String name,
+                           @RequestParam List<Long> memberIds,
+                           HttpSession session,
+                           Model model) {
+        String gate = requireAdmin(session);
+        if (gate != null) return gate;
+
+        try {
+            groupService.createGroup(name, memberIds);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("groups", groupService.findAll());
+            model.addAttribute("users", userService.findAll());
+            return "admin-manage-groups";
+        }
+        return "redirect:/admin/manage-groups";
+    }
+
+    @GetMapping("/groups/{id}/edit")
+    public String editGroup(@PathVariable Long id, Model model, HttpSession session) {
+        String gate = requireAdmin(session);
+        if (gate != null) return gate;
+
+        model.addAttribute("editGroup", groupService.getById(id));
+        model.addAttribute("groups", groupService.findAll());
+        model.addAttribute("users", userService.findAll());
+        return "admin-manage-groups";
+    }
+
+    @PostMapping("/groups/{id}/update")
+    public String updateGroup(@PathVariable Long id,
+                              @RequestParam String name,
+                              @RequestParam List<Long> memberIds,
+                              HttpSession session,
+                              Model model) {
+        String gate = requireAdmin(session);
+        if (gate != null) return gate;
+
+        try {
+            // For now, we'll delete and recreate the group since GroupService doesn't have an update method
+            groupService.delete(id);
+            groupService.createGroup(name, memberIds);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("editGroup", groupService.getById(id));
+            model.addAttribute("groups", groupService.findAll());
+            model.addAttribute("users", userService.findAll());
+            return "admin-manage-groups";
+        }
+        return "redirect:/admin/manage-groups";
+    }
+
+    @PostMapping("/groups/{id}/delete")
+    public String deleteGroup(@PathVariable Long id, HttpSession session) {
+        String gate = requireAdmin(session);
+        if (gate != null) return gate;
+        groupService.delete(id);
+        return "redirect:/admin/manage-groups";
+    }
+
+    // ===================== Auto Group Creation =====================
+
+    @PostMapping("/groups/auto")
+    public String createGroupByRole(@RequestParam String role,
+                                    @RequestParam String groupName,
+                                    HttpSession session,
+                                    Model model) {
+        String gate = requireAdmin(session);
+        if (gate != null) return gate;
+
+        try {
+            groupService.createGroupByRole(role, groupName);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("groups", groupService.findAll());
+            model.addAttribute("users", userService.findAll());
+            return "admin-manage-groups";
+        }
+        return "redirect:/admin/manage-groups";
+    }
+
     // ===================== Task CRUD =====================
 
     @PostMapping("/tasks")
@@ -185,6 +291,52 @@ public class AdminController {
             return "redirect:/admin/add-task?error=" + e.getMessage();
         }
         return "redirect:/admin/add-task?success=TaskCreated";
+    }
+
+    @PostMapping("/tasks/group")
+    public String createGroupTask(@RequestParam String title,
+                                  @RequestParam(required = false) String description,
+                                  @RequestParam Long groupId,
+                                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueDate,
+                                  HttpSession session) {
+        String gate = requireAdmin(session);
+        if (gate != null) return gate;
+
+        try {
+            taskService.createGroupTask(title, description, groupId, startDate, dueDate);
+        } catch (IllegalArgumentException e) {
+            return "redirect:/admin/add-task?error=" + e.getMessage();
+        }
+        return "redirect:/admin/add-task?success=GroupTaskCreated";
+    }
+
+    @PostMapping("/tasks/{id}/reassign")
+    public String reassignToMembers(@PathVariable Long id, HttpSession session) {
+        String gate = requireAdmin(session);
+        if (gate != null) return gate;
+
+        try {
+            taskService.reassignToGroupMembers(id);
+        } catch (IllegalArgumentException e) {
+            return "redirect:/admin/tasks/" + id + "?error=" + e.getMessage();
+        }
+        return "redirect:/admin/dashboard?success=TaskReassigned";
+    }
+
+    @PostMapping("/tasks/{id}/reassign/selected")
+    public String reassignToSelectedMembers(@PathVariable Long id,
+                                           @RequestParam List<Long> memberIds,
+                                           HttpSession session) {
+        String gate = requireAdmin(session);
+        if (gate != null) return gate;
+
+        try {
+            taskService.reassignToSelectedMembers(id, memberIds);
+        } catch (IllegalArgumentException e) {
+            return "redirect:/admin/dashboard?error=" + e.getMessage();
+        }
+        return "redirect:/admin/dashboard?success=TaskReassignedToSelected";
     }
 
     // User task status update (assignee only)

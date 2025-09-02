@@ -157,13 +157,35 @@
                         <i class="fas fa-users text-teal-600 mr-2"></i>
                         Task Assignment
                     </h3>
-                    
-                    <div>
+
+                    <!-- Assignment Type -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                            <i class="fas fa-question-circle mr-2 text-teal-600"></i>Assignment Type
+                        </label>
+                        <div class="flex space-x-6">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="assignmentType" value="individual" checked
+                                       onchange="toggleAssignmentType()"
+                                       class="mr-3 text-teal-600 focus:ring-teal-500">
+                                <span class="text-gray-700 font-medium">Individual Assignment</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="assignmentType" value="group"
+                                       onchange="toggleAssignmentType()"
+                                       class="mr-3 text-teal-600 focus:ring-teal-500">
+                                <span class="text-gray-700 font-medium">Group Assignment</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Individual Assignment -->
+                    <div id="individualAssignment" class="assignment-section">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             <i class="fas fa-user-check mr-2 text-teal-600"></i>Assignees
                         </label>
                         <div class="dropdown">
-                            <div id="dropdownBtn" 
+                            <div id="dropdownBtn"
                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg cursor-pointer bg-white hover:border-teal-500 transition-colors duration-300 flex items-center justify-between"
                                  onclick="toggleDropdown()">
                                 <span class="text-gray-500">Select team members to assign this task</span>
@@ -171,17 +193,17 @@
                             </div>
                             <div id="dropdownList" class="dropdown-content">
                                 <div class="p-3 border-b border-gray-200">
-                                    <input type="text" 
-                                           id="userSearch" 
-                                           placeholder="Search users..." 
+                                    <input type="text"
+                                           id="userSearch"
+                                           placeholder="Search users..."
                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-teal-500 focus:border-transparent text-sm"
                                            onkeyup="filterUsers()">
                                 </div>
                                 <div th:each="u : ${users}" class="dropdown-item user-item" th:data-username="${u.username}">
                                     <label class="flex items-center cursor-pointer">
-                                        <input type="checkbox" 
-                                               name="assigneeIds" 
-                                               th:value="${u.id}" 
+                                        <input type="checkbox"
+                                               name="assigneeIds"
+                                               th:value="${u.id}"
                                                onchange="updateSelection()"
                                                class="mr-3 text-teal-600 focus:ring-teal-500 rounded">
                                         <div class="w-8 h-8 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-white text-sm font-semibold mr-3">
@@ -196,6 +218,18 @@
                             </div>
                         </div>
                         <div id="selectedUsers" class="mt-3 flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <!-- Group Assignment -->
+                    <div id="groupAssignment" class="assignment-section hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-users-cog mr-2 text-teal-600"></i>Group
+                        </label>
+                        <select name="groupId"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-300">
+                            <option value="">Select a group</option>
+                            <option th:each="g : ${groups}" th:value="${g.id}" th:text="${g.name}">Group Name</option>
+                        </select>
                     </div>
                 </div>
 
@@ -260,6 +294,23 @@
 
     <script>
         let selectedUserIds = [];
+
+        function toggleAssignmentType() {
+            const assignmentType = document.querySelector('input[name="assignmentType"]:checked').value;
+            const individualSection = document.getElementById('individualAssignment');
+            const groupSection = document.getElementById('groupAssignment');
+            const form = document.querySelector('form');
+
+            if (assignmentType === 'individual') {
+                individualSection.classList.remove('hidden');
+                groupSection.classList.add('hidden');
+                form.action = '/admin/tasks';
+            } else {
+                individualSection.classList.add('hidden');
+                groupSection.classList.remove('hidden');
+                form.action = '/admin/tasks/group';
+            }
+        }
 
         function toggleDropdown() {
             const dropdown = document.getElementById("dropdownList");

@@ -36,9 +36,13 @@ public class Task {
     @Column(nullable = false)
     private LocalDate dueDate;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "assignee_id")
     private User assignee;
+
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TaskComment> comments = new ArrayList<>();

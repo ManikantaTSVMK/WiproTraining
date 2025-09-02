@@ -22,6 +22,7 @@ public class UserController {
 	@Autowired
 	UserRepo repo;
 	
+	//http://localhost:8081/user/1   : --  1 as an userId it will pass as an argument to the service class
 	@GetMapping("{userId}")
 	public User getUserById(@PathVariable("userId") Integer userId)
 	{

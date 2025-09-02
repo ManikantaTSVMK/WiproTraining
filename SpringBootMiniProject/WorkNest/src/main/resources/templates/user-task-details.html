@@ -231,6 +231,30 @@
                         <p class="text-gray-500">No assignee</p>
                     </div>
                 </div>
+
+                <!-- Reassign Task (Group Tasks Only) -->
+                <div class="glass-effect rounded-xl p-6" th:if="${task.group != null and !#lists.isEmpty(groupMembers)}">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-exchange-alt text-teal-600 mr-2"></i>
+                        Reassign Task
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4">Transfer this task to another group member</p>
+                    <form th:action="@{|/user/tasks/${task.id}/reassign|}" method="post" class="space-y-4">
+                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <select name="newAssigneeId" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+                            <option value="">Select a team member...</option>
+                            <option th:each="member : ${groupMembers}"
+                                    th:value="${member.id}"
+                                    th:text="${member.username}">Team Member</option>
+                        </select>
+                        <button type="submit"
+                                class="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-orange-700 hover:to-red-700 flex items-center justify-center space-x-2">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Reassign Task</span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </main>

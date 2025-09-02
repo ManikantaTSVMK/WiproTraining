@@ -1,8 +1,11 @@
 package com.example.worknest.controller;
 
+import com.example.worknest.model.Group;
 import com.example.worknest.model.Task;
 import com.example.worknest.model.TaskStatus;
 import com.example.worknest.model.User;
+import com.example.worknest.service.GroupService;
+import com.example.worknest.service.NotificationService;
 import com.example.worknest.service.TaskCommentService;
 import com.example.worknest.service.TaskService;
 import jakarta.servlet.http.HttpSession;
@@ -23,6 +26,8 @@ public class UserTaskController {
 
     private final TaskService taskService;
     private final TaskCommentService commentService;
+    private final GroupService groupService;
+    private final NotificationService notificationService;
 
     /** ✅ Helper: get logged-in user */
     private User current(HttpSession session) {
@@ -36,6 +41,8 @@ public class UserTaskController {
         if (me == null) return "redirect:/login";
 
         List<Task> myTasks = taskService.findByAssignee(me.getId());
+        List<Task> groupTasks = taskService.findByGroupMember(me.getId());
+        myTasks.addAll(groupTasks);
 
         // ✅ Fetch comments separately (avoid modifying Task.comments directly)
         Map<Long, List<?>> taskComments = myTasks.stream()
@@ -46,7 +53,7 @@ public class UserTaskController {
 
         model.addAttribute("me", me);
         model.addAttribute("tasks", myTasks);
-        model.addAttribute("taskComments", taskComments); 
+        model.addAttribute("taskComments", taskComments);
         model.addAttribute("today", LocalDate.now());
 
         // ✅ Stats
@@ -54,6 +61,9 @@ public class UserTaskController {
         model.addAttribute("countInProgress", countByStatus(myTasks, TaskStatus.IN_PROGRESS));
         model.addAttribute("countCompleted", countByStatus(myTasks, TaskStatus.COMPLETED));
         model.addAttribute("countDelayed", countDelayed(myTasks));
+
+        // ✅ Notifications
+        model.addAttribute("notifications", notificationService.getUnreadNotifications(me));
 
         return "user-dashboard";
     }
@@ -65,11 +75,20 @@ public class UserTaskController {
         if (me == null) return "redirect:/login";
 
         Task task = taskService.getById(id);
-        if (!isAssignee(task, me)) return "redirect:/user/dashboard";
+        if (!isAssignee(task, me) && !isGroupMember(task, me)) return "redirect:/user/dashboard";
 
         model.addAttribute("task", task);
         model.addAttribute("comments", commentService.listByTask(id));
         model.addAttribute("today", LocalDate.now());
+
+        // Add group members for reassignment if task is part of a group
+        if (task.getGroup() != null) {
+            List<User> groupMembers = task.getGroup().getMembers().stream()
+                    .filter(member -> !member.getId().equals(me.getId())) // Exclude current user
+                    .collect(Collectors.toList());
+            model.addAttribute("groupMembers", groupMembers);
+        }
+
         return "user-task-details";
     }
 
@@ -82,7 +101,7 @@ public class UserTaskController {
         if (me == null) return "redirect:/login";
 
         Task task = taskService.getById(id);
-        if (!isAssignee(task, me)) return "redirect:/user/dashboard";
+        if (!isAssignee(task, me) && !isGroupMember(task, me)) return "redirect:/user/dashboard";
 
         if (status == TaskStatus.PENDING || status == TaskStatus.IN_PROGRESS || status == TaskStatus.COMPLETED) {
             taskService.updateStatus(id, status);
@@ -100,16 +119,71 @@ public class UserTaskController {
         if (me == null) return "redirect:/login";
 
         Task task = taskService.getById(id);
-        if (!isAssignee(task, me)) return "redirect:/user/dashboard";
+        if (!isAssignee(task, me) && !isGroupMember(task, me)) return "redirect:/user/dashboard";
 
         commentService.add(id, me.getId(), content);
         return "redirect:/user/tasks/" + id;
+    }
+
+    /** ✅ Reassign task to another group member */
+    @PostMapping("/tasks/{id}/reassign")
+    public String reassignTask(@PathVariable Long id,
+                               @RequestParam Long newAssigneeId,
+                               HttpSession session) {
+        User me = current(session);
+        if (me == null) return "redirect:/login";
+
+        Task task = taskService.getById(id);
+        if (!isAssignee(task, me) && !isGroupMember(task, me)) return "redirect:/user/dashboard";
+
+        // Check if task is part of a group and new assignee is a group member
+        if (task.getGroup() == null) {
+            return "redirect:/user/tasks/" + id + "?error=NotGroupTask";
+        }
+
+        Group group = task.getGroup();
+        boolean isNewAssigneeInGroup = group.getMembers().stream()
+                .anyMatch(member -> member.getId().equals(newAssigneeId));
+
+        if (!isNewAssigneeInGroup) {
+            return "redirect:/user/tasks/" + id + "?error=InvalidAssignee";
+        }
+
+        // Reassign the task
+        taskService.updateTaskDetails(id, null, null, null, null, null, newAssigneeId);
+
+        return "redirect:/user/tasks/" + id + "?success=Reassigned";
+    }
+
+    /** ✅ Mark notification as read */
+    @PostMapping("/notifications/{id}/read")
+    public String markNotificationAsRead(@PathVariable Long id, HttpSession session) {
+        User me = current(session);
+        if (me == null) return "redirect:/login";
+
+        notificationService.markAsRead(id);
+        return "redirect:/user/dashboard";
+    }
+
+    /** ✅ Dismiss notification */
+    @PostMapping("/notifications/{id}/dismiss")
+    public String dismissNotification(@PathVariable Long id, HttpSession session) {
+        User me = current(session);
+        if (me == null) return "redirect:/login";
+
+        notificationService.deleteNotification(id);
+        return "redirect:/user/dashboard";
     }
 
     // 🔧 Utility methods
 
     private boolean isAssignee(Task task, User user) {
         return task.getAssignee() != null && task.getAssignee().getId().equals(user.getId());
+    }
+
+    private boolean isGroupMember(Task task, User user) {
+        return task.getGroup() != null && task.getGroup().getMembers().stream()
+                .anyMatch(member -> member.getId().equals(user.getId()));
     }
 
     private long countByStatus(List<Task> tasks, TaskStatus status) {

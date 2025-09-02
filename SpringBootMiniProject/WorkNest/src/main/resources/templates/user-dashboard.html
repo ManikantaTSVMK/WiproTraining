@@ -125,6 +125,37 @@
             </div>
         </div>
 
+        <!-- Notifications -->
+        <div th:if="${!#lists.isEmpty(notifications)}" class="mb-8">
+            <div class="glass-effect rounded-xl p-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-bell text-teal-600 mr-3"></i>Notifications
+                </h3>
+                <div class="space-y-3">
+                    <div th:each="notification : ${notifications}" class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <p class="text-sm text-blue-800" th:text="${notification.message}">Notification message</p>
+                                <p class="text-xs text-blue-600 mt-1" th:text="${#temporals.format(notification.createdAt, 'MMM dd, yyyy HH:mm')}">Created at</p>
+                            </div>
+                            <div class="flex space-x-2 ml-4">
+                                <form th:action="@{|/user/notifications/${notification.id}/read|}" method="post" class="inline">
+                                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors duration-300">
+                                        <i class="fas fa-check"></i> Mark Read
+                                    </button>
+                                </form>
+                                <form th:action="@{|/user/notifications/${notification.id}/dismiss|}" method="post" class="inline">
+                                    <button type="submit" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-xs transition-colors duration-300">
+                                        <i class="fas fa-times"></i> Dismiss
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Tasks Table -->
         <div class="glass-effect rounded-xl overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
