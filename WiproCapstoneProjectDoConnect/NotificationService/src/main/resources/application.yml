@@ -17,7 +17,7 @@ eureka:
     host: smtp.gmail.com
     port: 587
     username: manikantathota569@gmail.com   # replace with your Gmail
-    password: sxud fvva pigd wabz     # use app password, not Gmail password
+    password:      # use app password, not Gmail password
     properties:
       mail:
         smtp:
