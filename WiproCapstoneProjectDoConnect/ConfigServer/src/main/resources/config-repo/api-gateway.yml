@@ -1,0 +1,36 @@
+server:
+  port: 8080
+
+  spring:
+    cloud:
+      gateway:
+        discovery:
+          locator:
+            enabled: true
+            lower-case-service-id: true
+        routes:
+          - id: user-service
+            uri: lb://user-service
+            predicates:
+              - Path=/user/**
+            filters:
+              - StripPrefix=1   # ✅ Remove first "/user" before forwarding
+          - id: admin-service
+            uri: lb://admin-service
+            predicates:
+              - Path=/admin/**
+            filters:
+              - StripPrefix=1
+          - id: qa-service
+            uri: lb://qa-service
+            predicates:
+              - Path=/qa/**
+            filters:
+              - StripPrefix=1
+          - id: answer-service
+            uri: lb://answer-service
+            predicates:
+              - Path=/answers/**
+            filters:
+              - StripPrefix=1
+		  

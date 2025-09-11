@@ -29,4 +29,28 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     // 🔹 Find all group tasks (tasks assigned to groups)
     List<Task> findByGroupIsNotNull();
+
+    // 🔹 Soft delete support: find all non-deleted tasks
+    List<Task> findByDeletedFalse();
+
+    // 🔹 Find non-deleted tasks by status
+    List<Task> findByStatusAndDeletedFalse(TaskStatus status);
+
+    // 🔹 Find non-deleted tasks by assignee
+    List<Task> findByAssignee_IdAndDeletedFalse(Long userId);
+
+    // 🔹 Find non-deleted overdue tasks
+    List<Task> findByDueDateBeforeAndStatusNotAndDeletedFalse(LocalDate date, TaskStatus status);
+
+    // 🔹 Count non-deleted tasks by status
+    long countByStatusAndDeletedFalse(TaskStatus status);
+
+    // 🔹 Count non-deleted overdue tasks
+    long countByDueDateBeforeAndStatusNotAndDeletedFalse(LocalDate date, TaskStatus status);
+
+    // 🔹 Find non-deleted tasks by group member
+    List<Task> findByGroup_Members_IdAndDeletedFalse(Long userId);
+
+    // 🔹 Find non-deleted group tasks
+    List<Task> findByGroupIsNotNullAndDeletedFalse();
 }

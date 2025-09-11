@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Questions - Do-Connect Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin-question.css">
+    
+</head>
+<body>
+    <!-- Header -->
+    <header class="top-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo"><i class="fas fa-link"></i></div>
+                <div class="brand-text">
+                    <h1>Do-Connect Admin</h1>
+                    <p>Question Management System</p>
+                </div>
+            </div>
+            <div class="header-nav">
+                <a th:href="@{/admin/dashboard}"><i class="fas fa-home"></i> Dashboard</a>
+                <a th:href="@{/admin/users}"><i class="fas fa-users"></i> Users</a>
+                <a th:href="@{/admin/questions}" class="active"><i class="fas fa-clipboard-question"></i> Questions</a>
+                <a th:href="@{/admin/settings}"><i class="fas fa-cog"></i> Settings</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1><i class="fas fa-clipboard-question"></i> Manage Questions</h1>
+            <p>Review, approve, and manage all user questions</p>
+        </div>
+
+        <!-- Messages -->
+        <div th:if="${success}" class="message success">
+            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="message error">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+        </div>
+
+        <!-- Add Question Form -->
+        <div class="form-section">
+            <h2><i class="fas fa-plus-circle"></i> Add New Question</h2>
+            <form th:action="@{/admin/questions/add}" method="post">
+                <div class="form-group">
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title" required placeholder="Enter question title..."/>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" required placeholder="Enter detailed description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="userId">User ID:</label>
+                    <input type="number" id="userId" name="userId" required placeholder="Enter user ID..."/>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-plus"></i> Add Question
+                </button>
+            </form>
+        </div>
+
+        <!-- Questions Table -->
+        <div class="table-section">
+            <table>
+                <tr>
+                    <th><i class="fas fa-hashtag"></i> ID</th>
+                    <th><i class="fas fa-heading"></i> Title</th>
+                    <th><i class="fas fa-align-left"></i> Description</th>
+                    <th><i class="fas fa-user"></i> Asked By</th>
+                    <th><i class="fas fa-check-circle"></i> Status</th>
+                    <th><i class="fas fa-flag-checkered"></i> Resolved</th>
+                    <th><i class="fas fa-cogs"></i> Actions</th>
+                </tr>
+                <tr th:each="q : ${questions}">
+                    <td th:text="${q.id}">ID</td>
+                    <td th:text="${q.title}">Title</td>
+                    <td th:text="${q.description}">Description</td>
+                    <td th:text="${q.askedBy}">Asked By</td>
+                    <td>
+                        <span th:if="${q.approved}" class="status-badge status-approved"><i class="fas fa-check"></i> Approved</span>
+                        <span th:if="${!q.approved}" class="status-badge status-pending"><i class="fas fa-clock"></i> Pending</span>
+                    </td>
+                    <td>
+                        <span th:if="${q.resolved}" class="status-badge status-resolved"><i class="fas fa-flag-checkered"></i> Resolved</span>
+                        <span th:if="${!q.resolved}" class="status-badge status-unresolved"><i class="fas fa-hourglass-half"></i> Unresolved</span>
+                    </td>
+                    <td>
+                        <span th:if="${!q.approved}">
+                            <a th:href="@{'/admin/questions/approve/' + ${q.id}}" class="action-btn btn-approve"><i class="fas fa-thumbs-up"></i> Approve</a>
+                            <a th:href="@{'/admin/questions/reject/' + ${q.id}}" class="action-btn btn-reject"><i class="fas fa-thumbs-down"></i> Reject</a>
+                        </span>
+                        <span th:if="${q.approved and !q.resolved}">
+                            <a th:href="@{'/admin/questions/resolve/' + ${q.id}}" class="action-btn btn-resolve"><i class="fas fa-check-double"></i> Resolve</a>
+                        </span>
+                        <a th:href="@{'/admin/questions/delete/' + ${q.id}}" class="action-btn btn-delete" onclick="return confirm('Are you sure?');"><i class="fas fa-trash"></i> Delete</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Back Link -->
+        <a th:href="@{/admin/dashboard}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 Do-Connect Admin Dashboard. All rights reserved.</p>
+    </footer>
+</body>
+</html>

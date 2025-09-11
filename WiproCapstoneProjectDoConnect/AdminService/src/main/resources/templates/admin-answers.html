@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Answers - Do-Connect Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin-answers.css">
+    
+</head>
+<body>
+    <!-- Header -->
+    <header class="top-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo"><i class="fas fa-link"></i></div>
+                <div class="brand-text">
+                    <h1>Do-Connect Admin</h1>
+                    <p>Answer Management System</p>
+                </div>
+            </div>
+            <div class="header-nav">
+                <a th:href="@{/admin/dashboard}"><i class="fas fa-home"></i> Dashboard</a>
+                <a th:href="@{/admin/users}"><i class="fas fa-users"></i> Users</a>
+                <a th:href="@{/admin/questions}"><i class="fas fa-clipboard-question"></i> Questions</a>
+                <a th:href="@{/admin/answers}" class="active"><i class="fas fa-comments"></i> Answers</a>
+                <a th:href="@{/admin/settings}"><i class="fas fa-cog"></i> Settings</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1><i class="fas fa-comments"></i> Manage Answers</h1>
+            <p>Review, approve, and manage all user answers</p>
+        </div>
+
+        <!-- Messages -->
+        <div th:if="${success}" class="message success">
+            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="message error">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+        </div>
+
+        
+        <!-- Answers Table -->
+        <div class="table-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-hashtag"></i> ID</th>
+                        <th><i class="fas fa-comment-alt"></i> Answer</th>
+                        <th><i class="fas fa-question-circle"></i> Question ID</th>
+                        <th><i class="fas fa-user"></i> Posted By</th>
+                        <th><i class="fas fa-heart"></i> Likes</th>
+                        <th><i class="fas fa-comments"></i> Comments</th>
+                        <th><i class="fas fa-check-circle"></i> Status</th>
+                        <th><i class="fas fa-cogs"></i> Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="answer : ${answers}">
+                        <td th:text="${answer.id}">ID</td>
+                        <td th:text="${answer.content}" style="text-align:left; max-width:300px;">Answer</td>
+                        <td th:text="${answer.questionId != null ? answer.questionId : 'N/A'}">Question ID</td>
+                        <td th:text="${answer.answeredBy} ">Posted By</td>
+                        <td>
+                            <span class="likes-count"><i class="fas fa-heart"></i> <span th:text="${answer.likes}">0</span></span>
+                        </td>
+                        <td>
+                            <ul class="comments-list" th:if="${answer.comments != null and !answer.comments.isEmpty()}">
+                                <li th:each="c : ${answer.comments}" th:text="${c}">Comment</li>
+                            </ul>
+                            <span class="no-comments" th:if="${answer.comments == null or answer.comments.isEmpty()}">No comments</span>
+                        </td>
+                        <td>
+                            <span th:if="${answer.approved}" class="status-badge status-approved"><i class="fas fa-check"></i> Approved</span>
+                            <span th:if="${!answer.approved}" class="status-badge status-pending"><i class="fas fa-clock"></i> Pending</span>
+                        </td>
+                        <td>
+                            <span th:if="${!answer.approved}">
+                                <a th:href="@{'/admin/answers/approve/' + ${answer.id}}" class="action-btn btn-approve"><i class="fas fa-thumbs-up"></i> Approve</a>
+                                <a th:href="@{'/admin/answers/reject/' + ${answer.id}}" class="action-btn btn-reject"><i class="fas fa-thumbs-down"></i> Reject</a>
+                            </span>
+                            <a th:href="@{'/admin/answers/delete/' + ${answer.id}}" class="action-btn btn-delete" onclick="return confirm('Are you sure you want to delete this answer?');"><i class="fas fa-trash"></i> Delete</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Back Link -->
+        <a th:href="@{/admin/dashboard}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 Do-Connect Admin Dashboard. All rights reserved.</p>
+    </footer>
+</body>
+</html>

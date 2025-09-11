@@ -1,19 +1,16 @@
 package com.example.worknest.service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.stereotype.Service;
-
 import com.example.worknest.model.Group;
 import com.example.worknest.model.User;
 import com.example.worknest.repository.GroupRepository;
 import com.example.worknest.repository.UserRepository;
-
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -50,14 +47,18 @@ public class GroupService {
     }
 
     public List<Group> findAll() {
-        return groupRepo.findAll();
+        return groupRepo.findByDeletedFalse();
     }
 
     public void delete(Long id) {
-        if (!groupRepo.existsById(id)) {
-            throw new EntityNotFoundException("Group not found with ID " + id);
-        }
-        groupRepo.deleteById(id);
+        Group group = groupRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Group not found with ID " + id));
+        group.setDeleted(true);
+        groupRepo.save(group);
+    }
+
+    public Group update(Group group) {
+        return groupRepo.save(group);
     }
 
     /**
@@ -82,6 +83,7 @@ public class GroupService {
                 .name(groupName.trim())
                 .members(members)
                 .build();
+
         return groupRepo.save(group);
     }
 }

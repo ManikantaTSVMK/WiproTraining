@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Login - Do-Connect</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/login.css">
+    
+</head>
+<body>
+    <!-- Floating User Elements -->
+    <div class="floating-element">
+        <i class="fas fa-users"></i>
+    </div>
+    <div class="floating-element">
+        <i class="fas fa-user-circle"></i>
+    </div>
+    <div class="floating-element">
+        <i class="fas fa-heart"></i>
+    </div>
+    <div class="floating-element">
+        <i class="fas fa-star"></i>
+    </div>
+    <div class="floating-element">
+        <i class="fas fa-comments"></i>
+    </div>
+    <div class="floating-element">
+        <i class="fas fa-globe"></i>
+    </div>
+
+    <!-- Header -->
+    <header class="header-bar">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="header-logo">
+                    <i class="fas fa-link"></i>
+                </div>
+                <div class="header-text">
+                    <h1 class="header-title">Do-Connect</h1>
+                    <p class="header-subtitle">User Portal</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-info">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>User Login</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Login Card -->
+        <div class="login-container">
+            <!-- Header -->
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-link"></i>
+                </div>
+                <h1 class="brand-name">Do-Connect</h1>
+                <div class="user-badge">
+                    <i class="fas fa-user"></i>
+                    <span>User Access</span>
+                </div>
+                <p class="subtitle">Connect with your community</p>
+            </div>
+
+            <!-- Error Message -->
+            <div th:if="${error}" class="message error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}">Error message</span>
+            </div>
+
+            <!-- Success Message -->
+            <div th:if="${message}" class="message success-message">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${message}">Success message</span>
+            </div>
+
+
+
+            <!-- Login Form -->
+            <form th:action="@{/user/login}" method="post">
+                <!-- Email/Phone Field -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-envelope"></i>Email or Phone
+                    </label>
+                    <div class="input-container">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" 
+                               name="emailOrPhone" 
+                               required
+                               placeholder="Enter your email or phone number"
+                               class="form-input" />
+                    </div>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-lock"></i>Password
+                    </label>
+                    <div class="input-container">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" 
+                               id="passwordField"
+                               name="password" 
+                               required
+                               placeholder="Enter your password"
+                               class="form-input" />
+                        <i class="fas fa-eye password-toggle" id="togglePassword" onclick="togglePasswordVisibility()"></i>
+                    </div>
+                </div>
+
+                <!-- Login Button -->
+                <button type="submit" id="loginBtn" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Sign In</span>
+                </button>
+            </form>
+
+            <!-- Registration Link -->
+            <div class="divider">
+                <span>New to Do-Connect?</span>
+            </div>
+            <div class="register-link">
+                <a th:href="@{/user/register}">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Create Account</span>
+                </a>
+            </div>
+
+            <!-- Security Notice -->
+            <div class="security-notice">
+                <i class="fas fa-info-circle"></i>
+                <div class="security-notice-text">
+                    <strong>Welcome to Do-Connect!</strong> Join our community and start connecting with people around you.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-bar">
+        <div class="footer-content">
+            <div class="footer-left">
+                <div class="footer-brand">
+                    <i class="fas fa-link"></i>
+                    <span>Do-Connect</span>
+                </div>
+                <p class="footer-copyright">© 2024 Do-Connect. All rights reserved.</p>
+            </div>
+            <div class="footer-right">
+                <div class="footer-links">
+                    <a href="#" class="footer-link">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Help</span>
+                    </a>
+                    <a href="#" class="footer-link">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Privacy</span>
+                    </a>
+                    <a href="#" class="footer-link">
+                        <i class="fas fa-file-contract"></i>
+                        <span>Terms</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('passwordField');
+            const toggleIcon = document.getElementById('togglePassword');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form submission handling
+            const form = document.querySelector('form');
+            const loginBtn = document.getElementById('loginBtn');
+            
+            form.addEventListener('submit', function(e) {
+                const originalContent = loginBtn.innerHTML;
+                
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Signing In...</span>';
+                loginBtn.disabled = true;
+                
+                // Re-enable after 5 seconds (in case of error)
+                setTimeout(() => {
+                    loginBtn.innerHTML = originalContent;
+                    loginBtn.disabled = false;
+                }, 5000);
+            });
+
+            // Auto-focus first input
+            document.querySelector('input[name="emailOrPhone"]').focus();
+
+            // Add input validation feedback
+            const inputs = document.querySelectorAll('input[required]');
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (this.value.trim() === '') {
+                        this.classList.add('error');
+                    } else {
+                        this.classList.remove('error');
+                    }
+                });
+
+                input.addEventListener('input', function() {
+                    if (this.value.trim() !== '') {
+                        this.classList.remove('error');
+                    }
+                });
+            });
+
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    form.submit();
+                }
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97bf70322373a6dc',t:'MTc1NzM0NDkxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

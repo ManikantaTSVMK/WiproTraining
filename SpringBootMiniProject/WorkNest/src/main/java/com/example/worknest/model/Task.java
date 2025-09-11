@@ -36,6 +36,12 @@ public class Task {
     @Column(nullable = false)
     private LocalDate dueDate;
 
+    @Column(nullable = false)
+    private boolean frozen = false;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
+
     @ManyToOne
     @JoinColumn(name = "assignee_id")
     private User assignee;

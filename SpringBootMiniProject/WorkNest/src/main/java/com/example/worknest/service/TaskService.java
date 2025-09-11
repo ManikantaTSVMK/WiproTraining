@@ -204,6 +204,10 @@ public class TaskService {
         Task task = taskRepo.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with ID " + taskId));
 
+        if (task.isFrozen()) {
+            throw new IllegalStateException("Task is frozen and cannot be modified");
+        }
+
         if (title != null && !title.isBlank()) {
             task.setTitle(title.trim());
         }
@@ -236,13 +240,13 @@ public class TaskService {
     }
 
     /**
-     * Delete a task safely
+     * Soft delete a task
      */
     public void delete(Long taskId) {
-        if (!taskRepo.existsById(taskId)) {
-            throw new EntityNotFoundException("Task not found with ID " + taskId);
-        }
-        taskRepo.deleteById(taskId);
+        Task task = taskRepo.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found with ID " + taskId));
+        task.setDeleted(true);
+        taskRepo.save(task);
     }
 
     public Task getById(Long taskId) {
@@ -250,43 +254,49 @@ public class TaskService {
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with ID " + taskId));
     }
 
+    public void toggleFreeze(Long taskId) {
+        Task task = getById(taskId);
+        task.setFrozen(!task.isFrozen());
+        taskRepo.save(task);
+    }
+
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Task> findByAssignee(Long userId) {
-        return taskRepo.findByAssignee_Id(userId);
+        return taskRepo.findByAssignee_IdAndDeletedFalse(userId);
     }
 
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Task> findByStatus(TaskStatus status) {
-        return taskRepo.findByStatus(status);
+        return taskRepo.findByStatusAndDeletedFalse(status);
     }
 
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Task> findDelayed(LocalDate refDate) {
-        return taskRepo.findByDueDateBeforeAndStatusNot(refDate, TaskStatus.COMPLETED);
+        return taskRepo.findByDueDateBeforeAndStatusNotAndDeletedFalse(refDate, TaskStatus.COMPLETED);
     }
 
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Task> findAll() {
-        return taskRepo.findAll();
+        return taskRepo.findByDeletedFalse();
     }
 
     @Transactional(Transactional.TxType.SUPPORTS)
     public long countByStatus(TaskStatus status) {
-        return taskRepo.countByStatus(status);
+        return taskRepo.countByStatusAndDeletedFalse(status);
     }
 
     @Transactional(Transactional.TxType.SUPPORTS)
     public long countDelayed(LocalDate refDate) {
-        return taskRepo.countByDueDateBeforeAndStatusNot(refDate, TaskStatus.COMPLETED);
+        return taskRepo.countByDueDateBeforeAndStatusNotAndDeletedFalse(refDate, TaskStatus.COMPLETED);
     }
 
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Task> findByGroupMember(Long userId) {
-        return taskRepo.findByGroup_Members_Id(userId);
+        return taskRepo.findByGroup_Members_IdAndDeletedFalse(userId);
     }
 
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Task> findAllGroupTasksForAdmin() {
-        return taskRepo.findByGroupIsNotNull();
+        return taskRepo.findByGroupIsNotNullAndDeletedFalse();
     }
 }

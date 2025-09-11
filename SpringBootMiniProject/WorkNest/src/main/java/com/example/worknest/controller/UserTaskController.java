@@ -15,8 +15,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -42,25 +44,29 @@ public class UserTaskController {
 
         List<Task> myTasks = taskService.findByAssignee(me.getId());
         List<Task> groupTasks = taskService.findByGroupMember(me.getId());
-        myTasks.addAll(groupTasks);
+
+        // Combine lists without duplicates using LinkedHashSet to preserve order
+        Set<Task> combinedTasks = new LinkedHashSet<>(myTasks);
+        combinedTasks.addAll(groupTasks);
+        List<Task> allTasks = new java.util.ArrayList<>(combinedTasks);
 
         // ✅ Fetch comments separately (avoid modifying Task.comments directly)
-        Map<Long, List<?>> taskComments = myTasks.stream()
+        Map<Long, List<?>> taskComments = allTasks.stream()
                 .collect(Collectors.toMap(
                         Task::getId,
                         t -> commentService.listByTask(t.getId())
                 ));
 
         model.addAttribute("me", me);
-        model.addAttribute("tasks", myTasks);
+        model.addAttribute("tasks", allTasks);
         model.addAttribute("taskComments", taskComments);
         model.addAttribute("today", LocalDate.now());
 
         // ✅ Stats
-        model.addAttribute("countPending", countByStatus(myTasks, TaskStatus.PENDING));
-        model.addAttribute("countInProgress", countByStatus(myTasks, TaskStatus.IN_PROGRESS));
-        model.addAttribute("countCompleted", countByStatus(myTasks, TaskStatus.COMPLETED));
-        model.addAttribute("countDelayed", countDelayed(myTasks));
+        model.addAttribute("countPending", countByStatus(allTasks, TaskStatus.PENDING));
+        model.addAttribute("countInProgress", countByStatus(allTasks, TaskStatus.IN_PROGRESS));
+        model.addAttribute("countCompleted", countByStatus(allTasks, TaskStatus.COMPLETED));
+        model.addAttribute("countDelayed", countDelayed(allTasks));
 
         // ✅ Notifications
         model.addAttribute("notifications", notificationService.getUnreadNotifications(me));
@@ -103,6 +109,10 @@ public class UserTaskController {
         Task task = taskService.getById(id);
         if (!isAssignee(task, me) && !isGroupMember(task, me)) return "redirect:/user/dashboard";
 
+        if (task.isFrozen()) {
+            return "redirect:/user/tasks/" + id + "?error=TaskFrozen";
+        }
+
         if (status == TaskStatus.PENDING || status == TaskStatus.IN_PROGRESS || status == TaskStatus.COMPLETED) {
             taskService.updateStatus(id, status);
         }
@@ -121,6 +131,10 @@ public class UserTaskController {
         Task task = taskService.getById(id);
         if (!isAssignee(task, me) && !isGroupMember(task, me)) return "redirect:/user/dashboard";
 
+        if (task.isFrozen()) {
+            return "redirect:/user/tasks/" + id + "?error=TaskFrozen";
+        }
+
         commentService.add(id, me.getId(), content);
         return "redirect:/user/tasks/" + id;
     }
@@ -135,6 +149,10 @@ public class UserTaskController {
 
         Task task = taskService.getById(id);
         if (!isAssignee(task, me) && !isGroupMember(task, me)) return "redirect:/user/dashboard";
+
+        if (task.isFrozen()) {
+            return "redirect:/user/tasks/" + id + "?error=TaskFrozen";
+        }
 
         // Check if task is part of a group and new assignee is a group member
         if (task.getGroup() == null) {

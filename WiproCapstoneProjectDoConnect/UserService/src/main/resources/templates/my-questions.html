@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>My Questions - Do-Connect</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/my-questions.css">
+
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="header-logo"><i class="fas fa-link"></i></div>
+                <div class="header-text">
+                    <h1>Do-Connect</h1>
+                    <p>My Questions</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <a th:href="@{/user/logout}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <div class="main-content">
+        <h2>My Questions</h2>
+        <table>
+            <tr>
+                <th>ID</th><th>Title</th><th>Description</th>
+                <th>Status</th><th>Resolved</th>
+                <th>Answers</th><th>Actions</th>
+            </tr>
+            <tr th:each="q : ${myQuestions}">
+                <td th:text="${q.id}"></td>
+                <td th:text="${q.title}"></td>
+                <td th:text="${q.description}"></td>
+                <td>
+                    <span th:if="${q.approved}" class="badge approved">Approved</span>
+                    <span th:if="${!q.approved}" class="badge pending">Pending</span>
+                </td>
+                <td>
+                    <span th:if="${q.resolved}" class="badge resolved">Resolved</span>
+                    <span th:if="${!q.resolved}" class="badge unresolved">Unresolved</span>
+                </td>
+                <td>
+                    <ul>
+                        <li th:each="a : ${q.answers}">
+                            <p><b th:text="${a.content}"></b> <i>(by <span th:text="${a.answeredBy}"></span>)</i></p>
+
+                            <!-- Likes -->
+                            <p>
+                                <span>Likes: <span th:text="${a.likes}"></span></span>
+                                <form th:action="@{'/user/answers/' + ${a.id} + '/like'}" method="post" style="display:inline;">
+                                    <button type="submit"><i class="fas fa-thumbs-up"></i> Like</button>
+                                </form>
+                            </p>
+
+                            <!-- Comments -->
+                            <b>Comments:</b>
+                            <ul>
+                                <li th:each="c : ${a.comments}" th:text="${c}"></li>
+                            </ul>
+                            <form th:action="@{'/user/answers/' + ${a.id} + '/comment'}" method="post">
+                                <input type="text" name="comment" placeholder="Write a comment" required/>
+                                <button type="submit"><i class="fas fa-plus"></i> Add Comment</button>
+                            </form>
+                            <hr/>
+                        </li>
+                    </ul>
+                </td>
+                <td>
+                    <!-- Answer form (only if approved & unresolved) -->
+                    <form th:if="${q.approved and !q.resolved}" th:action="@{'/user/answers/' + ${q.id}}" method="post">
+                        <input type="text" name="content" placeholder="Write your answer" required/>
+                        <button type="submit"><i class="fas fa-paper-plane"></i> Answer</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+
+        <a th:href="@{/user/dashboard}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div>&copy; 2024 Do-Connect. All rights reserved.</div>
+    </footer>
+
+</body>
+</html>

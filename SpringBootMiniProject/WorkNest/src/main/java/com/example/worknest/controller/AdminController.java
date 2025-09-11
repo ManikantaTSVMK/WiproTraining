@@ -252,6 +252,16 @@ public class AdminController {
         return "redirect:/admin/manage-groups";
     }
 
+    @PostMapping("/groups/{id}/restore")
+    public String restoreGroup(@PathVariable Long id, HttpSession session) {
+        String gate = requireAdmin(session);
+        if (gate != null) return gate;
+        Group group = groupService.getById(id);
+        group.setDeleted(false);
+        groupService.update(group);
+        return "redirect:/admin/manage-groups?success=GroupRestored";
+    }
+
     // ===================== Auto Group Creation =====================
 
     @PostMapping("/groups/auto")
@@ -367,12 +377,32 @@ public class AdminController {
         return "redirect:/admin/dashboard?success=StatusUpdated";
     }
 
+    // ✅ Admin freeze/unfreeze task
+    @PostMapping("/tasks/{id}/freeze")
+    public String toggleFreezeTask(@PathVariable Long id, HttpSession session) {
+        String gate = requireAdmin(session);
+        if (gate != null) return gate;
+
+        taskService.toggleFreeze(id);
+        return "redirect:/admin/tasks/" + id + "?success=FrozenStatusUpdated";
+    }
+
     @PostMapping("/tasks/{id}/delete")
     public String deleteTask(@PathVariable Long id, HttpSession session) {
         String gate = requireAdmin(session);
         if (gate != null) return gate;
         taskService.delete(id);
-        return "redirect:/admin/dashboard?success=TaskDeleted";
+        return "redirect:/admin/tasks/" + id + "?success=TaskSoftDeleted";
+    }
+
+    @PostMapping("/tasks/{id}/restore")
+    public String restoreTask(@PathVariable Long id, HttpSession session) {
+        String gate = requireAdmin(session);
+        if (gate != null) return gate;
+        Task task = taskService.getById(id);
+        task.setDeleted(false);
+        taskService.updateStatus(id, task.getStatus()); // Save the change
+        return "redirect:/admin/tasks/" + id + "?success=TaskRestored";
     }
 
     // ===================== Task Update =====================
@@ -423,6 +453,12 @@ public class AdminController {
         model.addAttribute("comments", commentService.listByTask(id));
         model.addAttribute("users", userService.findAll());
         model.addAttribute("today", LocalDate.now());
+
+        // Add group members if task is assigned to a group
+        if (task.getGroup() != null) {
+            model.addAttribute("groupMembers", task.getGroup().getMembers());
+        }
+
         return "admin-task-details";
     }
 }

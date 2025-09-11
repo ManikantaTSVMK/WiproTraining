@@ -204,9 +204,10 @@
                             <option th:selected="${task.status.name() == 'COMPLETED'}" value="COMPLETED">Completed</option>
                         </select>
                         <button type="submit"
-                                class="w-full bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-teal-700 hover:to-cyan-700 flex items-center justify-center space-x-2">
+                                th:disabled="${task.frozen}"
+                                th:class="${task.frozen} ? 'w-full bg-gray-400 text-gray-200 py-3 px-4 rounded-lg font-semibold cursor-not-allowed flex items-center justify-center space-x-2' : 'w-full bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-teal-700 hover:to-cyan-700 flex items-center justify-center space-x-2'">
                             <i class="fas fa-save"></i>
-                            <span>Save Status</span>
+                            <span th:text="${task.frozen} ? 'Task Frozen' : 'Save Status'">Save Status</span>
                         </button>
                     </form>
                 </div>
@@ -215,7 +216,7 @@
                 <div class="glass-effect rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                         <i class="fas fa-user text-teal-600 mr-2"></i>
-                        Assignee
+                        Assigned To
                     </h3>
                     <div th:if="${task.assignee != null}" class="flex items-center space-x-3">
                         <div class="w-10 h-10 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">
@@ -229,6 +230,25 @@
                     <div th:if="${task.assignee == null}" class="text-center py-4">
                         <i class="fas fa-user-slash text-gray-400 text-2xl mb-2"></i>
                         <p class="text-gray-500">No assignee</p>
+                    </div>
+                </div>
+
+                <!-- Group Members (Group Tasks Only) -->
+                <div class="glass-effect rounded-xl p-6" th:if="${task.group != null and !#lists.isEmpty(groupMembers)}">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-users text-teal-600 mr-2"></i>
+                        Group Members
+                    </h3>
+                    <div class="space-y-3">
+                        <div th:each="member : ${groupMembers}" class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                <span th:text="${#strings.substring(member.username,0,1).toUpperCase()}">U</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900" th:text="${member.username}">Username</p>
+                                <p class="text-sm text-gray-500" th:text="${member.role}">Role</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

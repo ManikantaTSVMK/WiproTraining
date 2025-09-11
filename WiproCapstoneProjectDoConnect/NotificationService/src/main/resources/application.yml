@@ -1,0 +1,26 @@
+server:
+  port: 8084   # ✅ new port for notification-service
+
+spring:
+  application:
+    name: notification-service
+  config:
+    import: optional:configserver:http://localhost:8888
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+  # ✅ Configure your Gmail SMTP
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: manikantathota569@gmail.com   # replace with your Gmail
+    password: sxud fvva pigd wabz     # use app password, not Gmail password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

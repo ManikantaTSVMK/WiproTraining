@@ -1,0 +1,9 @@
+-------------------------------------------------------------------------------
+Test set: com.hcl.gl.Week8Day2OrderApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 7.831 s <<< FAILURE! - in com.hcl.gl.Week8Day2OrderApplicationTests
+contextLoads  Time elapsed: 0.015 s  <<< ERROR!
+java.lang.IllegalStateException: Failed to load ApplicationContext
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'scopedTarget.orderService': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'microservice.payment-service.endpoints.endpoint.uri' in value "${microservice.payment-service.endpoints.endpoint.uri}"
+Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'microservice.payment-service.endpoints.endpoint.uri' in value "${microservice.payment-service.endpoints.endpoint.uri}"
+

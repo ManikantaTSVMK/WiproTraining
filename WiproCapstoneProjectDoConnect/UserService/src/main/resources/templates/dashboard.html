@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+<head>
+    <meta charset="utf-8"/>
+    <title>User Dashboard - Do-Connect</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/dashboard.css">
+   
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="header-logo">
+                    <i class="fas fa-link"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Do-Connect</h1>
+                    <p>User Dashboard</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span>Welcome back!</span>
+                </div>
+                <a th:href="@{/user/logout}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="welcome-header">
+                <div class="welcome-text">
+                    <h2>Welcome to Your Dashboard</h2>
+                    <p>You are successfully logged in and ready to connect with the community.</p>
+                </div>
+                <div class="quick-actions">
+                    <a th:href="@{/user/ask-question}" class="action-btn">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Ask a Question</span>
+                    </a>
+                    <a th:href="@{/user/my-questions}" class="action-btn secondary">
+                        <i class="fas fa-list-alt"></i>
+                        <span>My Questions</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Details Section -->
+        <div class="welcome-section">
+            <div class="welcome-header">
+                <div class="welcome-text">
+                    <h2>Your Profile Details</h2>
+                    <p>View and manage your account information.</p>
+                </div>
+            </div>
+            <div class="user-details">
+                <div class="detail-item">
+                    <i class="fas fa-user"></i>
+                    <span><strong>Name:</strong> <span th:text="${user.name}">User Name</span></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-envelope"></i>
+                    <span><strong>Email:</strong> <span th:text="${user.email}">user@example.com</span></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-phone"></i>
+                    <span><strong>Phone:</strong> <span th:text="${user.phone}">+1234567890</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card questions">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number" th:text="${myQuestionsCount}">0</div>
+                    <div class="stat-label">Questions Asked</div>
+                </div>
+
+                <div class="stat-card approved">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number" th:text="${approvedMyQuestionsCount}">0</div>
+                    <div class="stat-label">Approved Questions (Mine)</div>
+                </div>
+
+                <div class="stat-card total">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number" th:text="${totalApprovedQuestionsCount}">0</div>
+                    <div class="stat-label">Total Approved Questions</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="search-header">
+                <i class="fas fa-search"></i>
+                <h3>Search Questions</h3>
+            </div>
+            <form th:action="@{/user/search}" method="get" class="search-form">
+                <input type="text" 
+                       name="keyword" 
+                       placeholder="Enter keyword to search questions..." 
+                       required
+                       class="search-input" />
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i>
+                    <span>Search</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Search Results Section -->
+        <div th:if="${searchResults}" class="results-section">
+            <div class="results-header">
+                <i class="fas fa-list"></i>
+                <h3>Search Results</h3>
+            </div>
+            
+            <div th:if="${!#lists.isEmpty(searchResults)}">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Asked By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="q : ${searchResults}">
+                            <td>
+                                <span class="question-id" th:text="${q.id}">1</span>
+                            </td>
+                            <td>
+                                <div class="question-title" th:text="${q.title}">Question Title</div>
+                            </td>
+                            <td>
+                                <div class="question-description" th:text="${q.description}">Question Description</div>
+                            </td>
+                            <td>
+                                <div class="question-author">
+                                    <i class="fas fa-user"></i>
+                                    <span th:text="${q.askedBy}">User Name</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div th:if="${#lists.isEmpty(searchResults)}" class="no-results">
+                <i class="fas fa-search"></i>
+                <h4>No Results Found</h4>
+                <p>No questions found matching your search keyword. Try different terms or browse all questions.</p>
+            </div>
+        </div>
+
+        <!-- All Approved Questions Section -->
+        <div class="approved-questions-section">
+            <div class="section-header">
+                <i class="fas fa-check-circle"></i>
+                <h3>All Approved Questions</h3>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div th:if="${success}" class="message success-message">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${success}">Success message</span>
+            </div>
+            <div th:if="${error}" class="message error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}">Error message</span>
+            </div>
+
+            <div class="questions-container">
+                <div th:each="q : ${approvedQuestions}" class="question-card">
+                    <!-- Question Header -->
+                    <div class="question-header">
+                        <div class="question-meta">
+                            <span class="question-id" th:text="'#' + ${q.id}">#1</span>
+                            <div class="question-status">
+                                <span th:if="${q.resolved}" class="status-badge resolved">
+                                    <i class="fas fa-check"></i>
+                                    Resolved
+                                </span>
+                                <span th:if="${!q.resolved}" class="status-badge unresolved">
+                                    <i class="fas fa-clock"></i>
+                                    Unresolved
+                                </span>
+                            </div>
+                        </div>
+                        <div class="question-author">
+                            <i class="fas fa-user"></i>
+                            <span th:text="${q.askedBy}">User Name</span>
+                        </div>
+                    </div>
+
+                    <!-- Question Content -->
+                    <div class="question-content">
+                        <h4 class="question-title" th:text="${q.title}">Question Title</h4>
+                        <p class="question-description" th:text="${q.description}">Question Description</p>
+                    </div>
+
+                    <!-- Answer Form (if unresolved) -->
+                    <div th:if="${!q.resolved}" class="answer-form">
+                        <form th:action="@{'/user/answers/' + ${q.id}}" method="post" class="answer-input-form">
+                            <div class="input-group">
+                                <input type="text" 
+                                       name="content" 
+                                       placeholder="Write your answer..." 
+                                       required
+                                       class="answer-input" />
+                                <button type="submit" class="answer-btn">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Answer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Answers Section -->
+                    <div th:if="${!#lists.isEmpty(q.answers)}" class="answers-section">
+                        <div class="answers-header">
+                            <i class="fas fa-comments"></i>
+                            <span>Answers</span>
+                            <span class="answers-count" th:text="'(' + ${#lists.size(q.answers)} + ')'"></span>
+                        </div>
+
+                        <div th:each="a : ${q.answers}" class="answer-card">
+                            <!-- Answer Content -->
+                            <div class="answer-content">
+                                <div class="answer-text" th:text="${a.content}">Answer content</div>
+                                <div class="answer-meta">
+                                    <span class="answer-author">
+                                        <i class="fas fa-user"></i>
+                                        <span th:text="${a.answeredBy}">Answer Author</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Answer Actions -->
+                            <div class="answer-actions">
+                                <div class="likes-section">
+                                    <span class="likes-count">
+                                        <i class="fas fa-heart"></i>
+                                        <span th:text="${a.likes}">0</span> likes
+                                    </span>
+                                    <form th:action="@{'/user/answers/' + ${a.id} + '/like'}" method="post" class="like-form">
+                                        <button type="submit" class="like-btn">
+                                            <i class="fas fa-thumbs-up"></i>
+                                            Like
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Comments Section -->
+                            <div class="comments-section">
+                                <div th:if="${!#lists.isEmpty(a.comments)}" class="comments-list">
+                                    <div class="comments-header">
+                                        <i class="fas fa-comment"></i>
+                                        <span>Comments</span>
+                                    </div>
+                                    <div th:each="c : ${a.comments}" class="comment-item">
+                                        <i class="fas fa-quote-left"></i>
+                                        <span th:text="${c}">Comment text</span>
+                                    </div>
+                                </div>
+
+                                <!-- Add Comment Form -->
+                                <form th:action="@{'/user/answers/' + ${a.id} + '/comment'}" method="post" class="comment-form">
+                                    <div class="comment-input-group">
+                                        <input type="text" 
+                                               name="comment" 
+                                               placeholder="Write a comment..." 
+                                               required
+                                               class="comment-input" />
+                                        <button type="submit" class="comment-btn">
+                                            <i class="fas fa-plus"></i>
+                                            Add
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- No Answers Message -->
+                    <div th:if="${#lists.isEmpty(q.answers)}" class="no-answers">
+                        <i class="fas fa-comment-slash"></i>
+                        <span>No answers yet. Be the first to answer!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: linear-gradient(135deg, #7c3aed, #3b82f6); color: white; padding: 1rem 0; text-align: center; margin-top: 2rem;">
+        <div style="max-width: 1200px; margin: 0 auto; font-size: 0.9rem;">
+            &copy; 2024 Do-Connect. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- ========================= -->
+    <!-- 💬 Chat Feature -->
+    <!-- ========================= -->
+    <!-- ===== Chat widget ===== -->
+    <button id="chatIcon" onclick="toggleChat()">💬</button>
+
+    <div id="chatWindow" aria-live="polite" tabindex="0">
+        <div class="chat-header">
+            <h4><i class="fas fa-comments"></i> DoConnect Chat</h4>
+            <button class="chat-close" onclick="toggleChat()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="chat-user-selector">
+            <label for="receiverSelect">
+                <i class="fas fa-user"></i>
+                Chat with:
+            </label>
+            <select id="receiverSelect" onchange="onReceiverChange()">
+                <option value="" disabled selected>Loading users...</option>
+            </select>
+            <span id="statusBadge"></span>
+        </div>
+
+        <div id="chatBox">
+            <div class="no-messages">
+                <i class="fas fa-comment-dots"></i>
+                <p>No previous messages</p>
+                <span>Start a conversation!</span>
+            </div>
+        </div>
+
+        <div class="chat-controls">
+            <div class="message-input-group">
+                <input id="messageInput" placeholder="Type a message..." />
+                <button id="sendBtn" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="chatDebug">
+            <i class="fas fa-circle"></i>
+            <span>Status: not connected</span>
+        </div>
+    </div>
+
+    <!-- SockJS + Stomp -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    (function(){
+
+        // ==== CONFIG - change only if your services are at different URLs ====
+        const CHAT_BASE = /*[[@{'http://localhost:8085'}]]*/ 'http://localhost:8085';
+        const WS_URL = CHAT_BASE + '/ws/chat';
+        const REST_SEND = CHAT_BASE + '/api/chat/send';
+        const REST_CONV = CHAT_BASE + '/api/chat/conversation';
+
+        const USER_BASE = /*[[@{'http://localhost:8082'}]]*/ 'http://localhost:8082';
+        // NOTE: your UserController has paths under /user/* so we use /user/api/users/online
+        const USER_ONLINE_API = USER_BASE + '/user/api/users/online';
+        const STATUS_URL_TEMPLATE = USER_BASE + '/user/api/users/{username}/status';
+
+        // Injected username from Thymeleaf (falls back to unknown if template missing)
+        const username = /*[[${user.name}]]*/ 'unknownUser';
+
+        // ==== state + DOM refs ====
+        let stompClient = null;
+        const chatBox = document.getElementById('chatBox');
+        const debugEl = document.getElementById('chatDebug');
+        const receiverSelect = document.getElementById('receiverSelect');
+        const statusBadge = document.getElementById('statusBadge');
+
+        function setDebug(msg){
+            console.log('[chat] ' + msg);
+            debugEl.innerText = 'Status: ' + msg;
+        }
+
+        // Toggle chat window
+        window.toggleChat = function(){
+            const win = document.getElementById('chatWindow');
+            if (win.style.display === 'block') {
+                win.style.display = 'none';
+            } else {
+                win.style.display = 'block';
+                // ensure users loaded and websocket connected when opening
+                loadOnlineUsers();
+                connectWebSocket();
+            }
+        };
+
+        // Connect to websocket (StompJs)
+        window.connectWebSocket = function(){
+            if (stompClient && stompClient.active) {
+                setDebug('already connected');
+                return;
+            }
+
+            setDebug('connecting to ' + WS_URL + ' ...');
+
+            stompClient = new StompJs.Client({
+                webSocketFactory: () => new SockJS(WS_URL),
+                reconnectDelay: 5000,
+                debug: () => {},
+                onConnect: () => {
+                    setDebug('connected');
+                    // subscribe to topic/messages/{username}
+                    stompClient.subscribe('/topic/messages/' + username, function(message){
+                        try {
+                            const payload = JSON.parse(message.body);
+                            appendMessage(payload.sender, payload.message);
+                        } catch (e) {
+                            console.error('Invalid payload', e);
+                        }
+                    });
+                },
+                onStompError: (frame) => {
+                    setDebug('STOMP error: ' + (frame && frame.headers ? frame.headers['message'] : 'unknown'));
+                },
+                onWebSocketClose: () => {
+                    setDebug('socket closed');
+                }
+            });
+
+            stompClient.activate();
+        };
+
+        // append message to box
+        function appendMessage(sender, message){
+            const p = document.createElement('p');
+            p.className = (sender === username) ? 'me' : 'other';
+            p.textContent = (sender === username ? 'Me: ' : sender + ': ') + message;
+            chatBox.appendChild(p);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // send message: WS publish when available, else REST fallback
+        window.sendMessage = function(){
+            const receiver = receiverSelect.value;
+            const messageContent = document.getElementById('messageInput').value.trim();
+
+            if (!receiver) {
+                alert('Select user to chat with');
+                return;
+            }
+            if (!messageContent) return;
+
+            const payload = { sender: username, receiver: receiver, message: messageContent };
+
+            if (stompClient && stompClient.active) {
+                stompClient.publish({ destination: '/app/sendMessage', body: JSON.stringify(payload) });
+                appendMessage(username, messageContent); // show instantly for sender
+                document.getElementById('messageInput').value = '';
+                setDebug('sent via WebSocket');
+            } else {
+                // REST fallback
+                fetch(`${REST_SEND}?sender=${encodeURIComponent(username)}&receiver=${encodeURIComponent(receiver)}&message=${encodeURIComponent(messageContent)}`, {
+                    method: 'POST'
+                })
+                .then(resp => {
+                    if (!resp.ok) throw new Error('REST send failed: ' + resp.status);
+                    return resp.json();
+                })
+                .then(() => {
+                    appendMessage(username, messageContent);
+                    document.getElementById('messageInput').value = '';
+                    setDebug('sent via REST');
+                })
+                .catch(err => {
+                    console.error(err);
+                    setDebug('REST send error: ' + err.message);
+                    alert('Failed to send: ' + err.message);
+                });
+            }
+        };
+
+        // Load online users (robust: supports array of objects or array of names)
+        window.loadOnlineUsers = function(){
+            setDebug('loading online users from ' + USER_ONLINE_API);
+            // Keep a temporary placeholder so UI doesn't act broken
+            receiverSelect.innerHTML = '<option value="" disabled selected>Loading users...</option>';
+
+            fetch(USER_ONLINE_API, { method: 'GET', headers: { 'Accept': 'application/json' } })
+                .then(r => {
+                    if (!r.ok) throw new Error('status ' + r.status);
+                    return r.json().catch(() => { throw new Error('Invalid JSON from user service'); });
+                })
+                .then(list => {
+                    receiverSelect.innerHTML = ''; // clear
+                    // add placeholder default option
+                    const placeholder = document.createElement('option');
+                    placeholder.value = '';
+                    placeholder.disabled = true;
+                    placeholder.selected = true;
+                    placeholder.text = '-- Select user --';
+                    receiverSelect.appendChild(placeholder);
+
+                    if (!list || list.length === 0) {
+                        setDebug('No other users online');
+                        // leave placeholder and show status
+                        statusBadge.innerText = 'No other users online';
+                        return;
+                    }
+
+                    // if list elements are strings -> treat as username
+                    // if objects -> try common props: name, username, email, status
+                    let count = 0;
+                    list.forEach(u => {
+                        let name = null;
+                        let stat = '';
+                        if (typeof u === 'string') { name = u; }
+                        else if (typeof u === 'object') {
+                            // try pick name (fallbacks)
+                            name = u.name || u.username || u.email || u.id || null;
+                            stat = u.status ? ` (${u.status})` : '';
+                        }
+                        if (!name) return;
+                        if (name === username) return; // skip self
+                        const opt = document.createElement('option');
+                        opt.value = name;
+                        opt.text = name + stat;
+                        receiverSelect.appendChild(opt);
+                        count++;
+                    });
+
+                    if (count === 0) {
+                        setDebug('No other users found (after filtering self)');
+                        statusBadge.innerText = 'No other users online';
+                        return;
+                    }
+
+                    // auto-select the first real user
+                    receiverSelect.selectedIndex = 1;
+                    onReceiverChange();
+                    setDebug('loaded ' + count + ' users');
+                })
+                .catch(err => {
+                    console.error('Failed to load online users', err);
+                    receiverSelect.innerHTML = '<option value="" disabled selected>Error loading users</option>';
+                    setDebug('Online users load failed: ' + err.message);
+                });
+        };
+
+        // when user selects receiver
+        window.onReceiverChange = function(){
+            updateStatus();
+            loadConversation();
+        };
+
+        // load conversation (both directions) for currently selected pair
+        window.loadConversation = function(){
+            const receiver = receiverSelect.value;
+            if (!receiver) return;
+            setDebug('loading conversation with ' + receiver);
+            fetch(`${REST_CONV}?sender=${encodeURIComponent(username)}&receiver=${encodeURIComponent(receiver)}`)
+                .then(r => {
+                    if (!r.ok) throw new Error('Conversation fetch failed: ' + r.status);
+                    return r.json();
+                })
+                .then(msgs => {
+                    chatBox.innerHTML = '';
+                    if (!msgs || msgs.length === 0) {
+                        chatBox.innerHTML = '<p><i>No previous messages</i></p>';
+                        return;
+                    }
+                    msgs.forEach(m => appendMessage(m.sender, m.message));
+                })
+                .catch(err => {
+                    console.error(err);
+                    setDebug('Conversation load failed: ' + err.message);
+                    chatBox.innerHTML = '<p><i>Unable to load conversation</i></p>';
+                });
+        };
+
+        // update status badge for selected receiver
+        window.updateStatus = function(){
+            const receiver = receiverSelect.value;
+            if (!receiver) { statusBadge.innerText = ''; return; }
+            const url = STATUS_URL_TEMPLATE.replace('{username}', encodeURIComponent(receiver));
+            fetch(url)
+                .then(r => {
+                    if (!r.ok) throw new Error('Status fetch failed: ' + r.status);
+                    return r.text();
+                })
+                .then(t => statusBadge.innerText = t ? t.toUpperCase() : '')
+                .catch(err => {
+                    console.warn('status fetch failed', err);
+                    statusBadge.innerText = '';
+                });
+        };
+
+        // Auto connect and load users on page load
+        window.addEventListener('load', () => {
+            try { connectWebSocket(); } catch(e){ console.warn('ws connect error', e); }
+            loadOnlineUsers();
+            // poll every 10s to keep dropdown up-to-date
+            setInterval(loadOnlineUsers, 10000);
+        });
+
+        // for console debugging
+        window.__chatDebug = { connectWebSocket, loadOnlineUsers, loadConversation, sendMessage };
+
+    })();
+    /*]]>*/
+    </script>
+</html>

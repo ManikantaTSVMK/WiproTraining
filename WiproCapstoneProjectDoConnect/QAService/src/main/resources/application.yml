@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: qa-service   # must match qa-service.yml in config-repo
+
+  config:
+    import: configserver:http://localhost:8888 # connect to Config Server
+
+server:
+  port: 8083
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

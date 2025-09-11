@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Question Details - Do-Connect</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/question-details.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="header-logo"><i class="fas fa-link"></i></div>
+                <div class="header-text">
+                    <h1>Do-Connect</h1>
+                    <p>Question Details</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <a th:href="@{/user/logout}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <div class="main-content">
+        <a th:href="@{/user/dashboard}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <h2>Question Details</h2>
+
+        <!-- Question Info -->
+        <div class="question-card">
+            <h3 th:text="${question.title}">Question Title</h3>
+            <p th:text="${question.description}">Question description</p>
+            <p><b>Asked By:</b> <span th:text="${question.askedBy}"></span> (User ID: <span th:text="${question.userId}"></span>)</p>
+            <p>
+                Status:
+                <span th:if="${question.approved}" class="badge approved">Approved</span>
+                <span th:if="${!question.approved}" class="badge pending">Pending</span>
+            </p>
+        </div>
+
+        <!-- Answers -->
+        <div class="answers-section">
+            <h3>Answers</h3>
+            <div th:each="a : ${answers}" class="answer-item">
+                <p th:text="${a.content}">Answer content</p>
+                <small>— <span th:text="${a.answeredBy}">User</span></small>
+            </div>
+        </div>
+
+        <!-- Post an Answer -->
+        <div class="answer-form">
+            <h3>Write Your Answer</h3>
+            <form th:action="@{'/answers/' + ${question.id}}" method="post">
+                <textarea name="content" placeholder="Write your answer..." rows="4" required></textarea>
+                <button type="submit"><i class="fas fa-paper-plane"></i> Submit Answer</button>
+            </form>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <p class="success" th:text="${success}"></p>
+        <p class="error" th:text="${error}"></p>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div>&copy; 2024 Do-Connect. All rights reserved.</div>
+    </footer>
+
+</body>
+</html>

@@ -100,7 +100,7 @@
                 <div class="glass-effect rounded-xl p-6">
                     <div class="flex items-start justify-between mb-4">
                         <h2 class="text-3xl font-bold text-gray-900" th:text="${task.title}">Task Title</h2>
-                        <div>
+                        <div class="flex items-center space-x-2">
                             <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full"
                                   th:if="${task.status.name() == 'COMPLETED'}"
                                   th:class="'status-completed'"
@@ -112,6 +112,8 @@
                                   th:if="${task.status.name() != 'COMPLETED' and (task.dueDate == null or !task.dueDate.isBefore(today))}"
                                   th:class="${task.status.name() == 'PENDING' ? 'status-pending' : 'status-in-progress'}"
                                   th:text="${task.status}">PENDING</span>
+                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-gray-500 text-white"
+                                  th:if="${task.deleted}">DELETED</span>
                         </div>
                     </div>
 
@@ -209,7 +211,7 @@
                 <div class="glass-effect rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                         <i class="fas fa-user text-teal-600 mr-2"></i>
-                        Assignee
+                        Assigned To
                     </h3>
                     <div th:if="${task.assignee != null}" class="flex items-center space-x-3">
                         <div class="w-10 h-10 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">
@@ -235,6 +237,25 @@
                     </div>
                 </div>
 
+                <!-- Group Members (Group Tasks Only) -->
+                <div class="glass-effect rounded-xl p-6" th:if="${task.group != null and !#lists.isEmpty(groupMembers)}">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-users text-teal-600 mr-2"></i>
+                        Group Members
+                    </h3>
+                    <div class="space-y-3">
+                        <div th:each="member : ${groupMembers}" class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                <span th:text="${#strings.substring(member.username,0,1).toUpperCase()}">U</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900" th:text="${member.username}">Username</p>
+                                <p class="text-sm text-gray-500" th:text="${member.role}">Role</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Group Actions (Group Tasks Only) -->
                 <div class="glass-effect rounded-xl p-6" th:if="${task.group != null}">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -253,20 +274,59 @@
                     </form>
                 </div>
 
-                <!-- Delete Task -->
+                <!-- Freeze/Unfreeze Task -->
                 <div class="glass-effect rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <i class="fas fa-trash-alt text-red-600 mr-2"></i>
-                        Delete Task
+                        <i class="fas fa-snowflake text-blue-600 mr-2"></i>
+                        Task Freeze
                     </h3>
-                    <p class="text-sm text-gray-600 mb-4">Permanently remove this task</p>
-                    <form th:action="@{|/admin/tasks/${task.id}/delete|}" method="post" class="space-y-4">
+                    <p class="text-sm text-gray-600 mb-4" th:if="${task.frozen}">This task is currently frozen. Users cannot modify it.</p>
+                    <p class="text-sm text-gray-600 mb-4" th:if="${!task.frozen}">Freeze this task to prevent user modifications.</p>
+                    <form th:action="@{|/admin/tasks/${task.id}/freeze|}" method="post" class="space-y-4">
                         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                         <button type="submit"
-                                onclick="return confirm('Are you sure you want to delete this task? This action cannot be undone.')"
+                                th:if="${task.frozen}"
+                                onclick="return confirm('Unfreeze this task to allow user modifications?')"
+                                class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 flex items-center justify-center space-x-2">
+                            <i class="fas fa-unlock"></i>
+                            <span>Unfreeze Task</span>
+                        </button>
+                        <button type="submit"
+                                th:if="${!task.frozen}"
+                                onclick="return confirm('Freeze this task to prevent user modifications?')"
+                                class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 flex items-center justify-center space-x-2">
+                            <i class="fas fa-snowflake"></i>
+                            <span>Freeze Task</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Delete/Restore Task -->
+                <div class="glass-effect rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-trash-alt text-red-600 mr-2" th:if="${!task.deleted}"></i>
+                        <i class="fas fa-undo text-green-600 mr-2" th:if="${task.deleted}"></i>
+                        <span th:if="${!task.deleted}">Delete Task</span>
+                        <span th:if="${task.deleted}">Restore Task</span>
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4" th:if="${!task.deleted}">Soft delete this task (can be restored later)</p>
+                    <p class="text-sm text-gray-600 mb-4" th:if="${task.deleted}">Restore this task to make it active again</p>
+                    <form th:action="@{|/admin/tasks/${task.id}/delete|}" method="post" th:if="${!task.deleted}" class="space-y-4">
+                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit"
+                                onclick="return confirm('Are you sure you want to soft delete this task? It can be restored later.')"
                                 class="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-4 rounded-lg font-semibold hover:from-red-700 hover:to-red-800 flex items-center justify-center space-x-2">
                             <i class="fas fa-trash"></i>
-                            <span>Delete Task</span>
+                            <span>Soft Delete Task</span>
+                        </button>
+                    </form>
+                    <form th:action="@{|/admin/tasks/${task.id}/restore|}" method="post" th:if="${task.deleted}" class="space-y-4">
+                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit"
+                                onclick="return confirm('Are you sure you want to restore this task?')"
+                                class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 flex items-center justify-center space-x-2">
+                            <i class="fas fa-undo"></i>
+                            <span>Restore Task</span>
                         </button>
                     </form>
                 </div>
